@@ -8,7 +8,7 @@ public class Main extends Game {
     public void create() {
         setScreen(new FirstScreen());
     }
-    public void cre() {
+    public void create1() {
         System.out.println("yo");
     }
 }
