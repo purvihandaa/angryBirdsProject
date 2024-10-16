@@ -1,4 +1,4 @@
-package com.Desktop.angryBird;
+package com.Desktop.angryBird; // Ensure this follows the proper naming convention
 
 import com.badlogic.gdx.Game;
 
@@ -8,4 +8,10 @@ public class Main extends Game {
     public void create() {
         setScreen(new FirstScreen());
     }
+
+    // Fixed inner class definition
+    public void Apple() {
+            System.out.println("HELLO");
+        }
+
 }
