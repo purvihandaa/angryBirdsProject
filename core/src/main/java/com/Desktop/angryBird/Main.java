@@ -26,7 +26,7 @@ public class Main extends ApplicationAdapter {
     public void create(){
         batch=new SpriteBatch();
         gsm= new GameStateManager();
-        img =new Texture("seokjinniesun.png");
+        img =new Texture("4.jpg");
         gsm.push(new MenuState(gsm));
         Gdx.gl.glClearColor(1,1,3,2);
 
@@ -38,7 +38,7 @@ public class Main extends ApplicationAdapter {
         gsm.update(Gdx.graphics.getDeltaTime());
         gsm.render(batch);
         batch.begin();
-        batch.draw(img,50,50);
+        batch.draw(img,0,0);
         batch.end();
 
     }
