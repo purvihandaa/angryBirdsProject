@@ -1,9 +1,6 @@
-<<<<<<<< HEAD:core/src/main/states/State.java
-package states;
-========
 package com.Desktop.angryBird.States;
->>>>>>>> 66c5fd9 (try1):core/src/main/java/com/Desktop/angryBird/States/State.java
 
+import com.Desktop.angryBird.States.GameStateManager;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Vector3;
