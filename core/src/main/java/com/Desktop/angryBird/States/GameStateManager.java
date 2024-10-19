@@ -6,14 +6,14 @@ import java.util.Stack; //FIFO
 
 public class GameStateManager {
 
-    private Stack<State> states;
+    private Stack<state> states;
 
     public GameStateManager(){
-        states= new Stack<State>();
+        states= new Stack<state>();
     }
 
 
-    public void push(State state){
+    public void push(state state){
         states.push(state);
     }
 
@@ -21,7 +21,7 @@ public class GameStateManager {
         states.pop();
     }
 
-    public void set(State state){
+    public void set(state state){
         states.pop();
         states.push(state);
     }

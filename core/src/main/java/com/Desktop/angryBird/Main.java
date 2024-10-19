@@ -10,7 +10,7 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import java.awt.*;
 
 public class Main extends ApplicationAdapter {
-    public static final int WIDTH = 500;
+    public static final int WIDTH = 1200;
     public static final int HEIGHT= 700;
 
 

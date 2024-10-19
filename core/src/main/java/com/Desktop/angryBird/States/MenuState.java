@@ -2,7 +2,7 @@ package com.Desktop.angryBird.States;
 
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 
-public class MenuState extends State {
+public class MenuState extends state {
 
 
     public MenuState(GameStateManager gsm) {
