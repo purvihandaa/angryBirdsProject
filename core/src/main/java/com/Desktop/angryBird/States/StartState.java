@@ -28,7 +28,7 @@ public class StartState extends state {
 
             // Check if the touch is within the play button's rectangle bounds
             if (playButtonBounds.contains(touchX, touchY)) {
-                gsm.set(new MenuState(gsm));  // Change the state to MenuState
+                gsm.set(new MenuState(gsm));
             }
         }
     }
