@@ -5,7 +5,7 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Rectangle;
 
-public class Level4 extends state {
+public class Level4 extends Level1 {
     public Level4(GameStateManager gsm) {
         super(gsm);
     }

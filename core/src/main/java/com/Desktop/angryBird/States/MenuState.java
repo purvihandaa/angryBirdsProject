@@ -33,7 +33,6 @@ public class MenuState extends state {
         lev3Bounds = new Rectangle(290, 95, 40, 40);
         lev4Bounds = new Rectangle(440, 155, 40, 40);
         lev5Bounds = new Rectangle(550, 260, 40, 40);
-
     }
 
     @Override
@@ -42,7 +41,6 @@ public class MenuState extends state {
             // Get the touch coordinates and convert the Y-coordinate
             float touchX = Gdx.input.getX();
             float touchY = Gdx.graphics.getHeight() - Gdx.input.getY();
-
 
             if (lev1Bounds.contains(touchX, touchY)) {
                 gsm.set(new Level1(gsm));
@@ -81,6 +79,9 @@ public class MenuState extends state {
         sb.end();
 
     }
+
+
+
 }
 
 
