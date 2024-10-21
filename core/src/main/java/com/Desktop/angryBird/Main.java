@@ -12,23 +12,21 @@ import java.awt.*;
 
 public class Main extends ApplicationAdapter {
     public static final int WIDTH = 1200;
-    public static final int HEIGHT= 700;
+    public static final int HEIGHT= 500;
 
 
     public static final String TITLE = "Angry Birds";
     private GameStateManager gsm;
     private SpriteBatch batch;
 
-    Texture img;
 
 
 
     public void create(){
         batch=new SpriteBatch();
         gsm= new GameStateManager();
-        img =new Texture("4.jpg");
+        Gdx.gl.glClearColor(1,0,0,1);
         gsm.push(new MenuState(gsm));
-        Gdx.gl.glClearColor(1,1,3,2);
 
 
     }
@@ -37,9 +35,7 @@ public class Main extends ApplicationAdapter {
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
         gsm.update(Gdx.graphics.getDeltaTime());
         gsm.render(batch);
-        batch.begin();
-        batch.draw(img,0,0);
-        batch.end();
+
 
     }
 }
