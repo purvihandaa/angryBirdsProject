@@ -7,7 +7,6 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 public class MenuState extends state {
     private Texture background;
     private Texture Startgame;
-    private Texture Loadgame;
 
     public MenuState(GameStateManager gsm) {
         super(gsm);
