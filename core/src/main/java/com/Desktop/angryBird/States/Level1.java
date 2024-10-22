@@ -19,8 +19,16 @@ public class Level1 extends state {
     private Texture obstacle3;
     private Texture obstacle4;
     private Texture obstacle5;
+    private Texture overlay;
     private Texture pause;
+    private Texture play;
+    private Texture restart;
+    private Texture backmenu;
     private Rectangle pauseBounds;
+    private Rectangle playBounds;
+    private Rectangle restartBounds;
+    private Rectangle backmenuBounds;
+    private boolean isPaused = false;
 
 
     public Level1(GameStateManager gsm) {
@@ -39,7 +47,16 @@ public class Level1 extends state {
         obstacle3=new Texture("obj4.png");
         obstacle4=new Texture("obj7.png");
         obstacle5=new Texture("obj10.png");
+        overlay = new Texture("overlay.png");
+        backmenu= new Texture("menub.png");
+
+        play = new Texture("playb.png");
+        restart=new Texture("replayb.png");
+
         pauseBounds = new Rectangle(10, 650, 80,80);
+        playBounds = new Rectangle(300, 300, 200, 200);
+        restartBounds = new Rectangle(500, 290, 200,200);
+        backmenuBounds = new Rectangle(700, 280, 205,205);
 
     }
 
@@ -50,10 +67,22 @@ public class Level1 extends state {
             float touchY = Gdx.graphics.getHeight() - Gdx.input.getY();
 
             if (pauseBounds.contains(touchX, touchY)) {
-                gsm.set(new PauseState(gsm));
-            }
-        }
+                isPaused = true;
 
+            }
+            else if (playBounds.contains(touchX, touchY)) {
+                isPaused = false;
+
+            }
+            else if (restartBounds.contains(touchX, touchY)) {
+                gsm.set(new Level1(gsm));
+            }
+            else if (backmenuBounds.contains(touchX, touchY)) {
+                gsm.push(new MenuState(gsm));
+            }
+
+
+        }
 
     }
 
@@ -80,11 +109,15 @@ public class Level1 extends state {
         sb.draw(obstacle3, 970, 250, 40,40);
         sb.draw(obstacle4, 1050, 250, 38,38);
         sb.draw(obstacle1, 969, 290, 130,20);
+
+        if (isPaused) {
+            sb.draw(overlay, 200, 70, 800, 600);  // Draw  overlay in the center
+            sb.draw(play, playBounds.x, playBounds.y, playBounds.width, playBounds.height);
+            sb.draw(restart, restartBounds.x, restartBounds.y, restartBounds.width, restartBounds.height);
+            sb.draw(backmenu, backmenuBounds.x, backmenuBounds.y, backmenuBounds.width, backmenuBounds.height);
+        }
         sb.end();
 
     }
-
-
-
 
 }

@@ -28,11 +28,11 @@ public class MenuState extends state {
         level4 = new Texture("four.png");
         level5 = new Texture("five.png");
 
-        lev1Bounds = new Rectangle(20, 155, 40, 40);
-        lev2Bounds = new Rectangle(170, 210, 40, 40);
-        lev3Bounds = new Rectangle(290, 95, 40, 40);
-        lev4Bounds = new Rectangle(440, 155, 40, 40);
-        lev5Bounds = new Rectangle(550, 260, 40, 40);
+        lev1Bounds = new Rectangle(490, 320, 38, 38);
+        lev2Bounds = new Rectangle(645, 325, 38, 38);
+        lev3Bounds = new Rectangle(790, 385, 36, 36);
+        lev4Bounds = new Rectangle(925, 470, 38, 38);
+        lev5Bounds = new Rectangle(1040, 305, 38, 38);
     }
 
     @Override
