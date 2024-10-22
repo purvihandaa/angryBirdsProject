@@ -16,7 +16,7 @@ public class StartState extends state {
         playbt = new Texture("playbt.png");
 
         // Define the bounds of the play button (position and size)
-        playButtonBounds = new Rectangle(250, 185, 100, 60);
+        playButtonBounds = new Rectangle(560, 325, 100, 60);
     }
 
     @Override
@@ -41,7 +41,7 @@ public class StartState extends state {
     @Override
     public void render(SpriteBatch sb) {
         sb.begin();
-        sb.draw(background, 150, 100, 300, 300);
+        sb.draw(background, 0, 0,Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
         sb.draw(playbt, playButtonBounds.x, playButtonBounds.y, playButtonBounds.width, playButtonBounds.height);
         sb.end();
     }

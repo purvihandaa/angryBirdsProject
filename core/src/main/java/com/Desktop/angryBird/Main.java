@@ -8,16 +8,12 @@ import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 
 public class Main extends ApplicationAdapter {
-    public static final int WIDTH = 1200;
-    public static final int HEIGHT= 500;
-
+//    public static final int WIDTH = 1200;
+//    public static final int HEIGHT= 750;
 
     public static final String TITLE = "Angry Birds";
     private GameStateManager gsm;
     private SpriteBatch batch;
-
-
-
 
     public void create(){
         batch=new SpriteBatch();
