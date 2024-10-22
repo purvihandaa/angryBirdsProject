@@ -22,7 +22,7 @@ public class Level1 extends state {
         bird1 = new Texture("redbird.png");
         bird2 = new Texture("bird2.png");
         bird3 = new Texture("bird4.png");
-        pig = new Texture("pig.png");
+        pig = new Texture("pig2.png");
         slingshot = new Texture("slingshot.png");
         obstacle1 = new Texture("obj1.png");
         obstacle2 = new Texture("objSt.png");
