@@ -58,7 +58,7 @@ public class Level1 extends state {
         sb.draw(birdRed, 150, 195, 70,70);
         sb.draw(birdYellow, 40, 95, 70,70);
         sb.draw(birdBlack, 100, 105, 70,70);
-        sb.draw(pig3, 1000, 300, 50,50);
+        sb.draw(pig3, 1000-5, 310, 85,100);
         sb.draw(pig2, 1000, 100, 65,65);
         sb.draw(obstacle1, 969, 230, 130,20);
         sb.draw(obstacle2, 1080, 98, 20,130);
