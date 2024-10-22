@@ -19,27 +19,40 @@ public class Level1 extends state {
     private Texture obstacle3;
     private Texture obstacle4;
     private Texture obstacle5;
+    private Texture pause;
+    private Rectangle pauseBounds;
+
 
     public Level1(GameStateManager gsm) {
         super(gsm);
-        bg = new Texture("bg.jpg");
-        birdRed = new Texture("birdRed.png");
-        birdYellow = new Texture("birdYellow.png");
-        birdBlack = new Texture("birdBlack.png");
-        pig1 = new Texture("pig1.png");
-        pig2 = new Texture("pig2.png");
-        pig3 = new Texture("pig3.png");
-        slingshot = new Texture("slingshot.png");
-        obstacle1 = new Texture("obj1.png");
-        obstacle2 = new Texture("objSt.png");
-        obstacle3 = new Texture("obj4.png");
-        obstacle4 = new Texture("obj7.png");
-        obstacle5 = new Texture("obj10.png");
+        bg=new Texture("bg.jpg");
+        birdRed=new Texture("birdRed.png");
+        birdYellow=new Texture("birdYellow.png");
+        birdBlack=new Texture("birdBlack.png");
+        pig1=new Texture("pig1.png");
+        pig2=new Texture("pig2.png");
+        pig3=new Texture("pig3.png");
+        pause=new Texture("pause.png");
+        slingshot=new Texture("slingshot.png");
+        obstacle1=new Texture("obj1.png");
+        obstacle2=new Texture("objSt.png");
+        obstacle3=new Texture("obj4.png");
+        obstacle4=new Texture("obj7.png");
+        obstacle5=new Texture("obj10.png");
+        pauseBounds = new Rectangle(10, 650, 80,80);
 
     }
 
     @Override
     protected void handleInput() {
+        if (Gdx.input.justTouched()) {
+            float touchX = Gdx.input.getX();
+            float touchY = Gdx.graphics.getHeight() - Gdx.input.getY();
+
+            if (pauseBounds.contains(touchX, touchY)) {
+                gsm.set(new PauseState(gsm));
+            }
+        }
 
 
     }
@@ -54,6 +67,7 @@ public class Level1 extends state {
     public void render(SpriteBatch sb) {
         sb.begin();
         sb.draw(bg, 0, 0, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
+        sb.draw(pause, pauseBounds.x, pauseBounds.y, pauseBounds.width, pauseBounds.height);
         sb.draw(slingshot, 130, 100, 120,120);
         sb.draw(birdRed, 150, 195, 70,70);
         sb.draw(birdYellow, 40, 95, 70,70);
