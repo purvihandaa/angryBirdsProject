@@ -16,7 +16,7 @@ public class StartState extends state {
         playbt = new Texture("playbt.png");
 
         // Define the bounds of the play button (position and size)
-        playButtonBounds = new Rectangle(560, 325, 100, 60);
+        playButtonBounds = new Rectangle(540, 325, 130, 70);
     }
 
     @Override
