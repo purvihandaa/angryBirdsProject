@@ -38,7 +38,6 @@ public class MenuState extends state {
     @Override
     protected void handleInput() {
         if (Gdx.input.justTouched()) {
-            // Get the touch coordinates and convert the Y-coordinate
             float touchX = Gdx.input.getX();
             float touchY = Gdx.graphics.getHeight() - Gdx.input.getY();
 

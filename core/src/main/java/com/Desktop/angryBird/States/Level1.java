@@ -1,10 +1,14 @@
 package com.Desktop.angryBird.States;
 
+import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.Input;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
+
+
 
 public class Level1 extends state {
     private Texture bg;
@@ -37,6 +41,15 @@ public class Level1 extends state {
     private boolean dragging = false;
     private float birdRedX = 150, birdRedY = 195;
 
+    private boolean GameWon = false;
+    private WinState winState;
+
+    private boolean GameLost = false;
+    private LoseState loseState;
+
+
+
+
     public Level1(GameStateManager gsm) {
         super(gsm);
         bg = new Texture("bg.jpg");
@@ -64,6 +77,9 @@ public class Level1 extends state {
         restartBounds = new Rectangle(560, 380, 95, 95);
         backmenuBounds = new Rectangle(680, 373, 100, 100);
 
+        winState = new WinState(gsm);
+        loseState = new LoseState(gsm);
+
 
         trajectoryDots = new Vector2[6];
         for (int i = 0; i < 6; i++) {
@@ -74,7 +90,7 @@ public class Level1 extends state {
     @Override
     protected void handleInput() {
         float touchX = Gdx.input.getX();
-        float touchY = Gdx.graphics.getHeight() - Gdx.input.getY();  // Adjust Y for screen coordinates
+        float touchY = Gdx.graphics.getHeight() - Gdx.input.getY();
 
         if (Gdx.input.justTouched()) {
 
@@ -108,6 +124,16 @@ public class Level1 extends state {
                 gsm.push(new MenuState(gsm));
             }
         }
+
+        if (Gdx.input.isKeyJustPressed(Input.Keys.W)){
+            GameWon=true;
+
+        }
+
+        if (Gdx.input.isKeyJustPressed(Input.Keys.L)){
+            GameLost=true;
+
+        }
     }
 
     private void updateTrajectory(float originX, float originY, float slope) {
@@ -124,7 +150,14 @@ public class Level1 extends state {
 
     @Override
     public void update(float dt) {
-        handleInput();
+        if (GameWon) {
+            winState.update(dt);
+        } else if(GameLost) {
+            loseState.update(dt);
+        }
+        else{
+            handleInput();
+        }
     }
 
     @Override
@@ -159,5 +192,15 @@ public class Level1 extends state {
         }
 
         sb.end();
+
+        if (GameWon) {
+            winState.render(sb);
+        }
+
+        if (GameLost) {
+            loseState.render(sb);
+        }
+
+
     }
 }
