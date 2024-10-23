@@ -5,10 +5,13 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Rectangle;
 
+
 public class StartState extends state {
     private Texture background;
     private Texture playbt;
     private Rectangle playButtonBounds;
+
+
 
     public StartState(GameStateManager gsm) {
         super(gsm);
