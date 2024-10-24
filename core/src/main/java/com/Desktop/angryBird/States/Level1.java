@@ -1,5 +1,6 @@
 package com.Desktop.angryBird.States;
 
+import com.Desktop.angryBird.Sprites.*;  // Import your RedBird class
 import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
@@ -8,22 +9,25 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 
-
-
 public class Level1 extends state {
     private Texture bg;
-    private Texture birdRed;
-    private Texture birdYellow;
-    private Texture birdBlack;
-    private Texture pig1;
-    private Texture pig2;
-    private Texture pig3;
+    private RedBird redBird;
+    private YellowBird birdYellow;
+    private BlackBird birdBlack;
+
+    private Pig1 pig1;
+    private Pig2 pig2;
+    private Pig3 pig3;
     private Texture slingshot;
-    private Texture obstacle1;
-    private Texture obstacle2;
-    private Texture obstacle3;
-    private Texture obstacle4;
-    private Texture obstacle5;
+
+    private Obst1 obstacle1A;
+    private Obst1 obstacle1B;
+    private Obst4 obstacle4;
+    private Obst7 obstacle7;
+    private Obst10 obstacle10;
+    private Obstst obstaclestA;
+    private Obstst obstaclestB;
+
     private Texture overlay;
     private Texture pause;
     private Texture play;
@@ -39,7 +43,6 @@ public class Level1 extends state {
 
     private Vector2[] trajectoryDots;
     private boolean dragging = false;
-    private float birdRedX = 150, birdRedY = 195;
 
     private boolean GameWon = false;
     private WinState winState;
@@ -47,25 +50,24 @@ public class Level1 extends state {
     private boolean GameLost = false;
     private LoseState loseState;
 
-
-
-
     public Level1(GameStateManager gsm) {
         super(gsm);
         bg = new Texture("bg.jpg");
-        birdRed = new Texture("birdRed.png");
-        birdYellow = new Texture("birdYellow.png");
-        birdBlack = new Texture("birdBlack.png");
-        pig1 = new Texture("pig1.png");
-        pig2 = new Texture("pig2.png");
-        pig3 = new Texture("pig3.png");
+        redBird = new RedBird(150, 195);
+        birdYellow = new YellowBird(40,95);
+        birdBlack = new BlackBird(100,105);
+        pig2 = new Pig2(1000, 100);
+        pig3 = new Pig3(1000 - 5, 310);
         pause = new Texture("pause.png");
         slingshot = new Texture("slingshot.png");
-        obstacle1 = new Texture("obj1.png");
-        obstacle2 = new Texture("objSt.png");
-        obstacle3 = new Texture("obj4.png");
-        obstacle4 = new Texture("obj7.png");
-        obstacle5 = new Texture("obj10.png");
+        obstacle1A = new Obst1(969, 230, 130, 20);
+        obstacle1B = new Obst1(969, 290, 130, 20);
+        obstacle4 = new Obst4(970, 250, 40, 40);
+        obstacle7 = new Obst7(1050, 250, 38, 38);
+        obstaclestA = new Obstst(1080, 98, 20, 130);
+        obstaclestB = new Obstst(970, 100, 20, 130);
+
+
         overlay = new Texture("overlay.png");
         backmenu = new Texture("menub.png");
         play = new Texture("playb.png");
@@ -80,7 +82,6 @@ public class Level1 extends state {
         winState = new WinState(gsm);
         loseState = new LoseState(gsm);
 
-
         trajectoryDots = new Vector2[6];
         for (int i = 0; i < 6; i++) {
             trajectoryDots[i] = new Vector2();
@@ -93,20 +94,17 @@ public class Level1 extends state {
         float touchY = Gdx.graphics.getHeight() - Gdx.input.getY();
 
         if (Gdx.input.justTouched()) {
-
-            if (touchX >= birdRedX && touchX <= birdRedX + 70 && touchY >= birdRedY && touchY <= birdRedY + 70) {
+            if (redBird.getBounds().contains(touchX, touchY)) {
                 dragging = true;
             }
         }
 
         if (dragging && Gdx.input.isTouched()) {
-            float dx = touchX - birdRedX;
-            float dy = birdRedY - touchY;
+            float dx = touchX - 150;
+            float dy = 195- touchY;
 
             float slope = dy / dx;
-
             updateTrajectory(215, 215, slope);
-
         }
 
         if (!Gdx.input.isTouched()) {
@@ -127,12 +125,10 @@ public class Level1 extends state {
 
         if (Gdx.input.isKeyJustPressed(Input.Keys.W)){
             GameWon=true;
-
         }
 
         if (Gdx.input.isKeyJustPressed(Input.Keys.L)){
             GameLost=true;
-
         }
     }
 
@@ -154,9 +150,9 @@ public class Level1 extends state {
             winState.update(dt);
         } else if(GameLost) {
             loseState.update(dt);
-        }
-        else{
+        } else {
             handleInput();
+            redBird.update(dt); // Update redBird
         }
     }
 
@@ -166,17 +162,25 @@ public class Level1 extends state {
         sb.draw(bg, 0, 0, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
         sb.draw(pause, pauseBounds.x, pauseBounds.y, pauseBounds.width, pauseBounds.height);
         sb.draw(slingshot, 130, 100, 120, 120);
-        sb.draw(birdRed, birdRedX, birdRedY, 70, 70);
-        sb.draw(birdYellow, 40, 95, 70, 70);
-        sb.draw(birdBlack, 100, 105, 70, 70);
-        sb.draw(pig3, 1000 - 5, 310, 85, 100);
-        sb.draw(pig2, 1000, 100, 65, 65);
-        sb.draw(obstacle1, 969, 230, 130, 20);
-        sb.draw(obstacle2, 1080, 98, 20, 130);
-        sb.draw(obstacle2, 970, 100, 20, 130);
-        sb.draw(obstacle3, 970, 250, 40, 40);
-        sb.draw(obstacle4, 1050, 250, 38, 38);
-        sb.draw(obstacle1, 969, 290, 130, 20);
+
+
+        redBird.render(sb);
+        birdBlack.render(sb);
+        birdYellow.render(sb);
+
+
+        pig3.render(sb);
+        pig2.render(sb);
+
+
+        obstacle1A.render(sb);
+        obstacle1B.render(sb);
+        obstacle4.render(sb);
+        obstacle7.render(sb);
+        obstaclestA.render(sb);
+        obstaclestB.render(sb);
+
+
 
         if (dragging) {
             for (Vector2 dotPosition : trajectoryDots) {
@@ -200,7 +204,5 @@ public class Level1 extends state {
         if (GameLost) {
             loseState.render(sb);
         }
-
-
     }
 }
