@@ -1,6 +1,6 @@
 package com.Desktop.angryBird.Sprites;
 
-public class BlueBird extends Bird{
+public class BlueBird extends Bird {
     public BlueBird(float x, float y) {
         super(x, y, "birdBlue.png");
     }

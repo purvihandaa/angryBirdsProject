@@ -1,6 +1,6 @@
 package com.Desktop.angryBird.Sprites;
 
-public class GoldenBird extends Bird{
+public class GoldenBird extends Bird {
     public GoldenBird(float x, float y, String texturePath) {
         super(x, y, texturePath);
     }
