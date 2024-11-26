@@ -6,11 +6,14 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
+import com.badlogic.gdx.graphics.Color;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class Level1 extends state {
+    private ShapeRenderer sr;
     private Texture bg;
     private Texture pauseButton;
 
@@ -45,9 +48,12 @@ public class Level1 extends state {
     private List<Pigs> pigs; // List of pigs for easier collision checks
     private float pigDamageTime = 0f; // Timer for pig damage removal
     private float birdChangeTime = 1f; // Timer for switching to next bird after one second
+    private float initialBirdX, initialBirdY;
+    private float maxDragDistance = 100f;
 
     public Level1(GameStateManager gsm) {
         super(gsm);
+        sr = new ShapeRenderer();
         bg = new Texture("bg.jpg");
         pauseButton = new Texture("pause.png");
         redBird = new RedBird(150, 195);
@@ -81,7 +87,7 @@ public class Level1 extends state {
         float touchX = Gdx.input.getX();
         float touchY = Gdx.graphics.getHeight() - Gdx.input.getY();
 
-        final float speedMultiplier = 2.0f;
+        final float speedMultiplier = 20.0f;
 
         if (Gdx.input.justTouched()) {
             if (touchX < 100 && touchY > Gdx.graphics.getHeight() - 100) {
@@ -90,13 +96,27 @@ public class Level1 extends state {
             }
             if (currentBird.getBounds().contains(touchX, touchY)) {
                 dragging = true;
+                initialBirdX = currentBird.x;
+                initialBirdY = currentBird.y;
+
+
             }
         }
 
         if (dragging && Gdx.input.isTouched()) {
-            float dx = touchX - 150;
-            float dy = 195 - touchY;
-            updateTrajectory(150, 195, dx, dy, speedMultiplier);
+            float dx = 150 - touchX;  // Reversed direction
+            float dy = touchY - 195;  // Reversed direction
+            float dragDistance = (float) Math.sqrt(dx * dx + dy * dy);
+            if (dragDistance > maxDragDistance) {
+                float angle = (float) Math.atan2(dy, dx);
+                dx = (float) (maxDragDistance * Math.cos(angle));
+                dy = (float) (maxDragDistance * Math.sin(angle));
+            }
+
+            // Move bird back based on drag
+            currentBird.x = 150 -dx;
+            currentBird.y = 195 +dy;
+            updateTrajectory(150, 195, -dx, -dy, speedMultiplier);
         }
 
         if (!Gdx.input.isTouched() && dragging) {
@@ -104,14 +124,16 @@ public class Level1 extends state {
             velocity.x = -(touchX - 150) * 0.5f * speedMultiplier;
             velocity.y = (195 - touchY) * 0.5f * speedMultiplier;
             isLaunched = true;
+            currentBird.x = initialBirdX;
+            currentBird.y = initialBirdY;
         }
     }
 
     private void updateTrajectory(float originX, float originY, float dx, float dy, float speedMultiplier) {
         trajectoryDots.clear();
-        float velocityX = -dx * 0.5f * speedMultiplier;
-        float velocityY = dy * 0.5f * speedMultiplier;
-        float timeStep = 0.7f;
+        float velocityX = -dx * speedMultiplier;
+        float velocityY = dy * speedMultiplier;
+        float timeStep = 0.03f;
         float time = 0;
         int maxDots = 20;
 
@@ -127,6 +149,42 @@ public class Level1 extends state {
             time += timeStep;
         }
     }
+
+    private void renderSlingshotBand(SpriteBatch sb) {
+        // Slingshot band anchor points (adjust these coordinates to match your slingshot position)
+        float leftAnchorX = 175;
+        float leftAnchorY = 200;
+        float rightAnchorX = 200;
+        float rightAnchorY = 205;
+
+        // If dragging, use current touch position
+        if (dragging) {
+            float touchX = Gdx.input.getX();
+            float touchY = Gdx.graphics.getHeight() - Gdx.input.getY();
+
+            float birdX = 150 + (touchX - 175) * 0.5f;
+            float birdY = 195 - (200 - touchY) * 0.99f;
+            currentBird.x = birdX;
+            currentBird.y = birdY;
+
+            // Draw elastic band
+            sr.begin(ShapeRenderer.ShapeType.Filled);
+            sr.setColor(new Color(0.4f, 0.2f, 0.05f, 1.0f));
+
+            // Left band
+            sr.rectLine(leftAnchorX, leftAnchorY, touchX, touchY, 5);
+
+            // Right band
+            sr.rectLine(rightAnchorX, rightAnchorY, touchX, touchY, 5);
+
+            sr.end();
+        }
+    }
+
+
+
+
+
 
     private void checkCollisions() {
         Rectangle birdBounds = currentBird.getBounds();
@@ -192,8 +250,12 @@ public class Level1 extends state {
         sb.draw(bg, 0, 0, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
         sb.draw(pauseButton, 10, Gdx.graphics.getHeight() - 90, 80, 80);
         sb.draw(slingshot, 130, 100, 120, 120);
+        sb.end();
+        renderSlingshotBand(sb);
 
+        sb.begin();
         currentBird.render(sb);
+
 
         for (Pigs pig : pigs) {
             pig.render(sb); // Render only pigs that are not destroyed
