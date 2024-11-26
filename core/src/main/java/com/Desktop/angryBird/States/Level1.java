@@ -9,6 +9,9 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class Level1 extends state {
     private Texture bg;
     private RedBird redBird;
@@ -41,8 +44,11 @@ public class Level1 extends state {
     private Rectangle backmenuBounds;
     private boolean isPaused = false;
 
-    private Vector2[] trajectoryDots;
     private boolean dragging = false;
+
+    private List<Vector2> trajectoryDots; // Store trajectory points
+    private final float GRAVITY = 9.8f; // Simulate gravity
+
 
     private boolean GameWon = false;
     private WinState winState;
@@ -82,10 +88,8 @@ public class Level1 extends state {
         winState = new WinState(gsm);
         loseState = new LoseState(gsm);
 
-        trajectoryDots = new Vector2[6];
-        for (int i = 0; i < 6; i++) {
-            trajectoryDots[i] = new Vector2();
-        }
+        trajectoryDots = new ArrayList<>();
+
     }
 
     @Override
@@ -100,16 +104,14 @@ public class Level1 extends state {
         }
 
         if (dragging && Gdx.input.isTouched()) {
-            float dx = touchX - 150;
-            float dy = 195- touchY;
+            float dx = touchX - 150; // Calculate horizontal drag
+            float dy = 195 - touchY; // Calculate vertical drag
 
-            float slope = dy / dx;
-            updateTrajectory(215, 215, slope);
+            updateTrajectory(150, 195, dx, dy);
         }
 
-        if (!Gdx.input.isTouched()) {
-            dragging = false;
-        }
+
+
 
         if (Gdx.input.justTouched()) {
             if (pauseBounds.contains(touchX, touchY)) {
@@ -132,19 +134,31 @@ public class Level1 extends state {
         }
     }
 
-    private void updateTrajectory(float originX, float originY, float slope) {
-        float spacing = 30;
-        float angle = (float) Math.atan(slope);
+    private void updateTrajectory(float originX, float originY, float dx, float dy) {
+        trajectoryDots.clear(); // Clear previous trajectory
 
-        for (int i = 0; i < trajectoryDots.length; i++) {
-            float offsetX = i * spacing * (float) Math.cos(angle);
-            float offsetY = i * spacing * (float) Math.sin(angle);
+            float velocityX = -dx * 0.5f; // Scale velocity for smoothness
+            float velocityY = dy * 0.5f; // Negate dy to fix direction mismatch
+            float timeStep = 0.7f; // Increase time intervals for more spaced-out dots
+            float time = 0;
+            int maxDots = 20;
 
-            trajectoryDots[i].set(originX + offsetX, originY + offsetY);
+            while ((trajectoryDots.size() < maxDots)) {
+                float x = originX + velocityX * time; // Horizontal position
+                float y = originY + velocityY * time - 0.5f * GRAVITY * time * time; // Vertical position
+
+                // Stop adding dots if they go off-screen
+                if (x < 0 || x > Gdx.graphics.getWidth() || y < 0 || y > Gdx.graphics.getHeight()) {
+                    break;
+                }
+
+                trajectoryDots.add(new Vector2(x, y));
+                time += timeStep; // Increment time for next point
+            }
         }
-    }
 
-    @Override
+
+        @Override
     public void update(float dt) {
         if (GameWon) {
             winState.update(dt);
@@ -180,13 +194,13 @@ public class Level1 extends state {
         obstaclestA.render(sb);
         obstaclestB.render(sb);
 
-
-
         if (dragging) {
             for (Vector2 dotPosition : trajectoryDots) {
-                sb.draw(dot, dotPosition.x, dotPosition.y, 10, 10);
+                sb.draw(dot, dotPosition.x, dotPosition.y, 10, 10); // Render each trajectory dot
             }
         }
+
+
 
         if (isPaused) {
             sb.draw(overlay, 380, 330, 470, 200);

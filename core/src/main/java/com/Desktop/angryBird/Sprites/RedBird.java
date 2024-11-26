@@ -10,3 +10,6 @@ public class RedBird extends Bird{
     public void update(float dt) {
     }
 }
+
+
+
