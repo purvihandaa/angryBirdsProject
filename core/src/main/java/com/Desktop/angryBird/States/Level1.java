@@ -56,6 +56,9 @@ public class Level1 extends state {
     private boolean GameLost = false;
     private LoseState loseState;
 
+    private Vector2 velocity = new Vector2(0, 0); // The bird's current velocity
+    private boolean isLaunched = false;  // Track if the bird is launched
+
     public Level1(GameStateManager gsm) {
         super(gsm);
         bg = new Texture("bg.jpg");
@@ -73,7 +76,6 @@ public class Level1 extends state {
         obstaclestA = new Obstst(1080, 98, 20, 130);
         obstaclestB = new Obstst(970, 100, 20, 130);
 
-
         overlay = new Texture("overlay.png");
         backmenu = new Texture("menub.png");
         play = new Texture("playb.png");
@@ -89,13 +91,15 @@ public class Level1 extends state {
         loseState = new LoseState(gsm);
 
         trajectoryDots = new ArrayList<>();
-
     }
 
     @Override
     protected void handleInput() {
         float touchX = Gdx.input.getX();
         float touchY = Gdx.graphics.getHeight() - Gdx.input.getY();
+
+        // Speed multiplier to increase the speed of the bird
+        final float speedMultiplier = 2.0f; // Adjust this multiplier to control the speed increase
 
         if (Gdx.input.justTouched()) {
             if (redBird.getBounds().contains(touchX, touchY)) {
@@ -107,58 +111,71 @@ public class Level1 extends state {
             float dx = touchX - 150; // Calculate horizontal drag
             float dy = 195 - touchY; // Calculate vertical drag
 
-            updateTrajectory(150, 195, dx, dy);
+            // Update the trajectory with speed multiplier applied
+            updateTrajectory(150, 195, dx, dy, speedMultiplier);
         }
 
+        if (!Gdx.input.isTouched() && dragging) { // Drag is released
+            dragging = false;
 
+            // Calculate the velocity vector for the bird from the last drag
+            // Apply the speed multiplier to both horizontal and vertical velocity components
+            velocity.x = - (touchX - 150) * 0.5f * speedMultiplier;  // Horizontal velocity (reverse and scale)
+            velocity.y = (195 - touchY) * 0.5f * speedMultiplier;   // Vertical velocity (reverse and scale)
 
+            isLaunched = true; // Bird is now launched
+        }
 
+        // Pause and menu handling
         if (Gdx.input.justTouched()) {
             if (pauseBounds.contains(touchX, touchY)) {
                 isPaused = true;
             } else if (playBounds.contains(touchX, touchY)) {
                 isPaused = false;
             } else if (restartBounds.contains(touchX, touchY)) {
-                gsm.set(new Level1(gsm));
+                gsm.set(new Level1(gsm)); // Restart the level
             } else if (backmenuBounds.contains(touchX, touchY)) {
-                gsm.push(new MenuState(gsm));
+                gsm.push(new MenuState(gsm)); // Go back to the menu
             }
         }
 
-        if (Gdx.input.isKeyJustPressed(Input.Keys.W)){
-            GameWon=true;
+        // Trigger Game Won state (for testing)
+        if (Gdx.input.isKeyJustPressed(Input.Keys.W)) {
+            GameWon = true;
         }
 
-        if (Gdx.input.isKeyJustPressed(Input.Keys.L)){
-            GameLost=true;
+        // Trigger Game Lost state (for testing)
+        if (Gdx.input.isKeyJustPressed(Input.Keys.L)) {
+            GameLost = true;
         }
     }
 
-    private void updateTrajectory(float originX, float originY, float dx, float dy) {
+    private void updateTrajectory(float originX, float originY, float dx, float dy, float speedMultiplier) {
         trajectoryDots.clear(); // Clear previous trajectory
 
-            float velocityX = -dx * 0.5f; // Scale velocity for smoothness
-            float velocityY = dy * 0.5f; // Negate dy to fix direction mismatch
-            float timeStep = 0.7f; // Increase time intervals for more spaced-out dots
-            float time = 0;
-            int maxDots = 20;
+        float velocityX = -dx * 0.5f * speedMultiplier; // Apply speed multiplier to horizontal velocity
+        float velocityY = dy * 0.5f * speedMultiplier;  // Apply speed multiplier to vertical velocity
+        float timeStep = 0.7f; // Increase time intervals for more spaced-out dots
+        float time = 0;
+        int maxDots = 20;
 
-            while ((trajectoryDots.size() < maxDots)) {
-                float x = originX + velocityX * time; // Horizontal position
-                float y = originY + velocityY * time - 0.5f * GRAVITY * time * time; // Vertical position
+        while ((trajectoryDots.size() < maxDots)) {
+            float x = originX + velocityX * time; // Horizontal position
+            float y = originY + velocityY * time - 0.5f * GRAVITY * time * time; // Vertical position with gravity applied
 
-                // Stop adding dots if they go off-screen
-                if (x < 0 || x > Gdx.graphics.getWidth() || y < 0 || y > Gdx.graphics.getHeight()) {
-                    break;
-                }
-
-                trajectoryDots.add(new Vector2(x, y));
-                time += timeStep; // Increment time for next point
+            // Stop adding dots if they go off-screen
+            if (x < 0 || x > Gdx.graphics.getWidth() || y < 0 || y > Gdx.graphics.getHeight()) {
+                break;
             }
+
+            trajectoryDots.add(new Vector2(x, y)); // Store the trajectory point
+            time += timeStep; // Increment time for next point
         }
+    }
 
 
-        @Override
+
+    @Override
     public void update(float dt) {
         if (GameWon) {
             winState.update(dt);
@@ -166,9 +183,26 @@ public class Level1 extends state {
             loseState.update(dt);
         } else {
             handleInput();
-            redBird.update(dt); // Update redBird
+
+            // Move the red bird if it has been launched
+            if (isLaunched) {
+                // Update bird's position directly
+                redBird.x += velocity.x * dt;
+                redBird.y += velocity.y * dt;
+
+                // Apply gravity to the vertical velocity (simulate gravity)
+                velocity.y -= GRAVITY * dt;
+
+                // Stop the bird if it goes off-screen or lands
+                if (redBird.y < 0 || redBird.x < 0 || redBird.x > Gdx.graphics.getWidth()) {
+                    isLaunched = false; // Reset the bird's state when it goes off-screen
+                }
+            }
+
+            redBird.update(dt); // Update redBird (this will handle any internal logic for RedBird)
         }
     }
+
 
     @Override
     public void render(SpriteBatch sb) {
@@ -177,15 +211,12 @@ public class Level1 extends state {
         sb.draw(pause, pauseBounds.x, pauseBounds.y, pauseBounds.width, pauseBounds.height);
         sb.draw(slingshot, 130, 100, 120, 120);
 
-
         redBird.render(sb);
         birdBlack.render(sb);
         birdYellow.render(sb);
 
-
         pig3.render(sb);
         pig2.render(sb);
-
 
         obstacle1A.render(sb);
         obstacle1B.render(sb);
@@ -199,8 +230,6 @@ public class Level1 extends state {
                 sb.draw(dot, dotPosition.x, dotPosition.y, 10, 10); // Render each trajectory dot
             }
         }
-
-
 
         if (isPaused) {
             sb.draw(overlay, 380, 330, 470, 200);
