@@ -10,12 +10,13 @@ public abstract class Obstacles {
     protected float x, y;
     protected float width;
     protected float height;
+    public int power = 5; // Add power attribute (example: 5)
 
     public Obstacles(float x, float y, String texturePath, float w, float h) {
         this.x = x;
         this.y = y;
-        this.width=w;
-        this.height=h;
+        this.width = w;
+        this.height = h;
         this.texture = new Texture(texturePath);
     }
 
@@ -27,5 +28,28 @@ public abstract class Obstacles {
 
     public Rectangle getBounds() {
         return new Rectangle(x, y, width, height);
+    }
+
+    // Check if bird collides with the obstacle
+    public boolean checkCollision(Bird bird) {
+        return bird.getBounds().overlaps(this.getBounds());
+    }
+
+    // Handle the collision between bird and obstacle
+    public void handleCollision(Bird bird) {
+        if (checkCollision(bird)) {
+            bird.reducePower(this.power); // Reduce bird's power by obstacle's power
+            this.dispose(); // Destroy obstacle
+        }
+    }
+
+    public void dispose() {
+        if (texture != null) {
+            texture.dispose();
+        }
+    }
+
+    public void setTexture(Texture texture) {
+        this.texture = texture; // Set the texture to null or an invisible texture
     }
 }
