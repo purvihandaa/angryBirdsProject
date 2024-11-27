@@ -70,13 +70,15 @@ public class Level1 extends state {
         bg = new Texture("bg.jpg");
         pauseButton = new Texture("pause.png");
         redBird = new RedBird(150, 195);
-        birdYellow = new YellowBird(50, 95);
-        birdBlack = new BlackBird(100, 105);
+        birdYellow = new YellowBird(100, 95);
+        birdBlack = new BlackBird(110, 110);
 
         birdQueue = new ArrayList<>();
         birdQueue.add(redBird);
         birdQueue.add(birdYellow);
         birdQueue.add(birdBlack);
+
+
 
         currentBird = birdQueue.get(0);
 
@@ -94,12 +96,15 @@ public class Level1 extends state {
 
         slingshot = new Texture("slingshot.png");
         obstacles = new ArrayList<>();
-        obstacles.add(new Obst1(world, 969, 230, 5, 1));
-        obstacles.add(new Obst1(world, 969, 290, 5, 1));
-        obstacles.add(new Obst4(world, 970, 250, 1, 1));
-        obstacles.add(new Obst7(world, 1050, 250, 2, 2));
-        obstacles.add(new Obstst(world, 1080, 98, 1, 1));
-        obstacles.add(new Obstst(world, 970, 100, 1, 1));
+        // Positions adjusted considering center-based Box2D coordinate system
+        obstacles.add(new Obst1(world, (969), (230), 130 / 50f, 20 / 50f)); // (969, 230, 130, 20)
+        obstacles.add(new Obst1(world, (969), (290), 130 / 50f, 20 / 50f)); // (969, 290, 130, 20)
+        obstacles.add(new Obst4(world, (970), (260), 55 / 50f, 55 / 50f));   // (970, 250, 40, 40)
+        obstacles.add(new Obst7(world, (1050), (250), 20 / 50f, 20 / 50f)); // (1050, 250, 38, 38)
+        obstacles.add(new Obstst(world, (1080), (98), 20 / 50f, 130 / 50f));  // (1080, 98, 20, 130)
+        obstacles.add(new Obstst(world, (970), (100), 20 / 50f, 130 / 50f));  // (970, 100, 20, 130)
+
+
 
         obstacle1A = (Obst1) obstacles.get(0);  // Initialize obstacle1A from the list
         obstacle1B = (Obst1) obstacles.get(1);  // Initialize obstacle1B from the list
@@ -325,11 +330,15 @@ public class Level1 extends state {
         renderSlingshotBand(sb);
 
         sb.begin();
-        currentBird.render(sb);
 
-        if (nextBird != null) {
-            nextBird.render(sb);
+        for (Bird bird : birdQueue) {
+            bird.render(sb);
         }
+//        currentBird.render(sb);
+//
+//        if (nextBird != null) {
+//            nextBird.render(sb);
+//        }
 
         for (Pigs pig : pigs) {
             pig.render(sb); // Render only pigs that are not destroyed
