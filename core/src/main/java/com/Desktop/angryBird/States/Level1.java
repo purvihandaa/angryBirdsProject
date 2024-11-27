@@ -8,11 +8,14 @@ import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.physics.box2d.BodyDef;
 import com.badlogic.gdx.physics.box2d.World;
 
 
 import java.util.ArrayList;
 import java.util.List;
+
+import static com.Desktop.angryBird.States.BaseLevel.PPM;
 
 public class Level1 extends state {
 
@@ -70,15 +73,13 @@ public class Level1 extends state {
         bg = new Texture("bg.jpg");
         pauseButton = new Texture("pause.png");
         redBird = new RedBird(150, 195);
-        birdYellow = new YellowBird(100, 95);
-        birdBlack = new BlackBird(110, 110);
+        birdYellow = new YellowBird(50, 95);
+        birdBlack = new BlackBird(100, 105);
 
         birdQueue = new ArrayList<>();
         birdQueue.add(redBird);
         birdQueue.add(birdYellow);
         birdQueue.add(birdBlack);
-
-
 
         currentBird = birdQueue.get(0);
 
@@ -103,7 +104,6 @@ public class Level1 extends state {
         obstacles.add(new Obst7(world, (1050), (250), 20 / 50f, 20 / 50f)); // (1050, 250, 38, 38)
         obstacles.add(new Obstst(world, (1080), (98), 20 / 50f, 130 / 50f));  // (1080, 98, 20, 130)
         obstacles.add(new Obstst(world, (970), (100), 20 / 50f, 130 / 50f));  // (970, 100, 20, 130)
-
 
 
         obstacle1A = (Obst1) obstacles.get(0);  // Initialize obstacle1A from the list
@@ -220,10 +220,6 @@ public class Level1 extends state {
     }
 
 
-
-
-
-
     private void checkCollisions() {
         Rectangle birdBounds = currentBird.getBounds();
 
@@ -239,13 +235,24 @@ public class Level1 extends state {
         // Check collision with obstacles
         for (Obstacles obstacle : obstacles) {
             if (birdBounds.overlaps(obstacle.getBounds())) {
-                // Apply an impulse to the obstacle for realistic fall
-                obstacle.checkCollisionWithBird(currentBird);
+                System.out.println("Collision detected with obstacle: " + obstacle); // Debug output
+
+                // Check if the obstacle is currently static
+                if (obstacle.body.getType() == BodyDef.BodyType.StaticBody) {
+                    // Change the body type to dynamic to allow it to fall
+                    obstacle.body.setType(BodyDef.BodyType.DynamicBody);
+
+                    // Debug output to confirm the change
+                    System.out.println("Obstacle type after change: " + obstacle.body.getType());
+                }
+
+                // Optionally, reset the bird's position or state after collision
+                isLaunched = false;
+                currentBird.x = initialBirdX; // Reset position if needed
+                currentBird.y = initialBirdY;
             }
         }
     }
-
-
     private void destroyPig(Pigs pig) {
         pig.setTexture(new Texture("pig_damaged.png")); // Change to destroyed pig texture
         // Add more logic here if required, like animations or score increment
@@ -289,6 +296,7 @@ public class Level1 extends state {
 
     @Override
     public void update(float dt) {
+        world.step(dt, 6, 2);
         if (GameWon || GameLost) return;
 
         handleInput();
@@ -330,15 +338,11 @@ public class Level1 extends state {
         renderSlingshotBand(sb);
 
         sb.begin();
+        currentBird.render(sb);
 
-        for (Bird bird : birdQueue) {
-            bird.render(sb);
+        if (nextBird != null) {
+            nextBird.render(sb);
         }
-//        currentBird.render(sb);
-//
-//        if (nextBird != null) {
-//            nextBird.render(sb);
-//        }
 
         for (Pigs pig : pigs) {
             pig.render(sb); // Render only pigs that are not destroyed

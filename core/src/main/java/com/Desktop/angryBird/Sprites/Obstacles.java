@@ -8,7 +8,7 @@ import com.badlogic.gdx.physics.box2d.*;
 import static com.Desktop.angryBird.States.BaseLevel.PPM;
 
 public abstract class Obstacles {
-    protected Body body;
+    public Body body;
     private boolean toRemove = false;
     private float removeThreshold = -10; // Y-position at which the obstacle is considered "fallen"
     protected Texture texture;
@@ -49,17 +49,22 @@ public abstract class Obstacles {
 
     public void checkCollisionWithBird(Bird bird) {
         Rectangle birdBounds = bird.getBounds();
-        Rectangle obstacleBounds = getBounds(); // Get the obstacle's bounds using the new method
+        Rectangle obstacleBounds = getBounds();
 
         if (birdBounds.overlaps(obstacleBounds)) {
-            // Apply an impulse to the obstacle for realistic fall
-            body.applyLinearImpulse(
-                new Vector2(0, -10f), // Downward impulse
-                body.getWorldCenter(),
-                true
+            // Calculate impulse based on the bird's "simulated" velocity and mass
+            Vector2 impulse = new Vector2(
+                bird.getVelocity().x * bird.getMass(),  // Bird's velocity and mass factor
+                bird.getVelocity().y * bird.getMass()
             );
+
+            body.applyLinearImpulse(impulse, body.getWorldCenter(), true);
+
+            // Optional: Adjust the damping or restitution dynamically based on impact
+            body.setLinearDamping(0.5f); // Adds some damping for more realistic fall
         }
     }
+
 
     public void update(float dt) {
         if (body.getPosition().y < removeThreshold) {
