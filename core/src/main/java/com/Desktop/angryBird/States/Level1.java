@@ -13,6 +13,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class Level1 extends state {
+
     private ShapeRenderer sr;
     private Texture bg;
     private Texture pauseButton;
@@ -21,6 +22,8 @@ public class Level1 extends state {
     private YellowBird birdYellow;
     private BlackBird birdBlack;
     private Bird currentBird;
+    private List<Bird> birdQueue;
+    private Bird nextBird;
 
     private Pig2 pig2;
     private Pig3 pig3;
@@ -57,10 +60,21 @@ public class Level1 extends state {
         bg = new Texture("bg.jpg");
         pauseButton = new Texture("pause.png");
         redBird = new RedBird(150, 195);
-        birdYellow = new YellowBird(40, 95);
+        birdYellow = new YellowBird(50, 95);
         birdBlack = new BlackBird(100, 105);
 
-        currentBird = redBird; // Start with the red bird
+        birdQueue = new ArrayList<>();
+        birdQueue.add(redBird);
+        birdQueue.add(birdYellow);
+        birdQueue.add(birdBlack);
+
+        currentBird = birdQueue.get(0);
+
+        if (birdQueue.size() > 1) {
+            nextBird = birdQueue.get(1);
+            nextBird.x = 40; // Position beneath the slingshot
+            nextBird.y = 95;
+        }
 
         pig2 = new Pig2(1000, 100);
         pig3 = new Pig3(995, 310);
@@ -94,12 +108,10 @@ public class Level1 extends state {
                 gsm.push(new PauseState(gsm, this));
                 return;
             }
-            if (currentBird.getBounds().contains(touchX, touchY)) {
+            if (!isLaunched && currentBird.getBounds().contains(touchX, touchY)) {
                 dragging = true;
                 initialBirdX = currentBird.x;
                 initialBirdY = currentBird.y;
-
-
             }
         }
 
@@ -204,14 +216,39 @@ public class Level1 extends state {
     }
 
     private void switchToNextBird() {
-        if (currentBird instanceof RedBird) {
-            currentBird = birdYellow; // Switch to yellow bird
-        } else if (currentBird instanceof YellowBird) {
-            currentBird = birdBlack; // Switch to black bird
+        isLaunched = false;
+        velocity.set(0, 0);
+
+        // Remove the current bird from the queue
+        birdQueue.remove(0);
+
+        // Check if there are more birds
+        if (!birdQueue.isEmpty()) {
+            // Set the next bird to the slingshot
+            currentBird = birdQueue.get(0);
+            currentBird.x = 150;  // Slingshot primary position
+            currentBird.y = 195;
+
+            // If more than one bird left, position the next bird beneath
+            if (birdQueue.size() > 1) {
+                nextBird = birdQueue.get(1);
+                nextBird.x = 40;
+                nextBird.y = 95;
+            } else {
+                nextBird = null;
+            }
         } else {
-            // Game Over or Next Level
-            GameWon = true; // For now, consider the level won when all birds are used
+            // No more birds
+            if (!arePigsDestroyed()) {
+                GameLost = true;
+            } else {
+                GameWon = true;
+            }
         }
+    }
+
+    private boolean arePigsDestroyed() {
+        return pigs.isEmpty() || pigs.stream().allMatch(pig -> pig.damaged);
     }
 
     @Override
@@ -226,8 +263,9 @@ public class Level1 extends state {
 
             velocity.y -= GRAVITY * dt;
 
+
             if (currentBird.y < 0 || currentBird.x < 0 || currentBird.x > Gdx.graphics.getWidth()) {
-                isLaunched = false;
+                switchToNextBird();
             }
 
             checkCollisions(); // Check for collisions after updating bird position
@@ -256,6 +294,9 @@ public class Level1 extends state {
         sb.begin();
         currentBird.render(sb);
 
+        if (nextBird != null) {
+            nextBird.render(sb);
+        }
 
         for (Pigs pig : pigs) {
             pig.render(sb); // Render only pigs that are not destroyed
