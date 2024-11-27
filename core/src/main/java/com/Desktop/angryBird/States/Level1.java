@@ -4,10 +4,12 @@ import com.Desktop.angryBird.Sprites.*;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
-import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.physics.box2d.World;
+
 
 import java.util.ArrayList;
 import java.util.List;
@@ -38,6 +40,10 @@ public class Level1 extends state {
 
     private Texture dot;
 
+    private World world;
+
+
+
     private boolean dragging = false;
     private boolean GameWon = false;
     private boolean GameLost = false;
@@ -53,6 +59,10 @@ public class Level1 extends state {
     private float birdChangeTime = 1f; // Timer for switching to next bird after one second
     private float initialBirdX, initialBirdY;
     private float maxDragDistance = 100f;
+
+
+    private List<Obstacles> obstacles;
+
 
     public Level1(GameStateManager gsm) {
         super(gsm);
@@ -79,13 +89,24 @@ public class Level1 extends state {
         pig2 = new Pig2(1000, 100);
         pig3 = new Pig3(995, 310);
 
+        world = new World(new Vector2(0, -9.8f), true);  // Gravity downwards, and the second parameter indicates whether bodies should be sleeping.
+
+
         slingshot = new Texture("slingshot.png");
-        obstacle1A = new Obst1(969, 230, 130, 20);
-        obstacle1B = new Obst1(969, 290, 130, 20);
-        obstacle4 = new Obst4(970, 250, 40, 40);
-        obstacle7 = new Obst7(1050, 250, 38, 38);
-        obstaclestA = new Obstst(1080, 98, 20, 130);
-        obstaclestB = new Obstst(970, 100, 20, 130);
+        obstacles = new ArrayList<>();
+        obstacles.add(new Obst1(world, 969, 230, 5, 1));
+        obstacles.add(new Obst1(world, 969, 290, 5, 1));
+        obstacles.add(new Obst4(world, 970, 250, 1, 1));
+        obstacles.add(new Obst7(world, 1050, 250, 2, 2));
+        obstacles.add(new Obstst(world, 1080, 98, 1, 1));
+        obstacles.add(new Obstst(world, 970, 100, 1, 1));
+
+        obstacle1A = (Obst1) obstacles.get(0);  // Initialize obstacle1A from the list
+        obstacle1B = (Obst1) obstacles.get(1);  // Initialize obstacle1B from the list
+        obstacle4 = (Obst4) obstacles.get(2);   // Initialize obstacle4
+        obstacle7 = (Obst7) obstacles.get(3);   // Initialize obstacle7
+        obstaclestA = (Obstst) obstacles.get(4); // Initialize obstaclestA
+        obstaclestB = (Obstst) obstacles.get(5); // Initialize obstaclestB
 
         dot = new Texture("dots.png");
 
@@ -201,6 +222,7 @@ public class Level1 extends state {
     private void checkCollisions() {
         Rectangle birdBounds = currentBird.getBounds();
 
+        // Check collision with pigs
         for (Pigs pig : pigs) {
             if (!pig.damaged && birdBounds.overlaps(pig.getBounds())) {
                 pig.damage(); // Mark pig as damaged
@@ -208,7 +230,16 @@ public class Level1 extends state {
                 pigDamageTime = 1f; // Start timer to remove pig after 1 second
             }
         }
+
+        // Check collision with obstacles
+        for (Obstacles obstacle : obstacles) {
+            if (birdBounds.overlaps(obstacle.getBounds())) {
+                // Apply an impulse to the obstacle for realistic fall
+                obstacle.checkCollisionWithBird(currentBird);
+            }
+        }
     }
+
 
     private void destroyPig(Pigs pig) {
         pig.setTexture(new Texture("pig_damaged.png")); // Change to destroyed pig texture
@@ -278,6 +309,8 @@ public class Level1 extends state {
                 switchToNextBird(); // Switch to the next bird after removing the pig
             }
         }
+
+        obstacles.removeIf(obstacle -> obstacle.isToRemove());
 
         currentBird.update(dt);
     }
