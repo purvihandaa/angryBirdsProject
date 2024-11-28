@@ -17,8 +17,10 @@ public class LoseState extends state {
     private Rectangle menuBounds;
     private Rectangle replayBounds;
 
+    private state previousState;
 
-    public LoseState(GameStateManager gsm) {
+
+    public LoseState(GameStateManager gsm, state previousState) {
         super(gsm);
 
         loseOverlay = new Texture("CommOverlay.png");
@@ -29,6 +31,8 @@ public class LoseState extends state {
 
         menuBounds = new Rectangle(740, 320, 80, 80);
         replayBounds = new Rectangle(450, 320, 80, 80);
+        this.previousState = previousState; // Save the state to render behind the pause screen
+
 
     }
 
@@ -58,6 +62,8 @@ public class LoseState extends state {
 
     @Override
     public void render(SpriteBatch sb) {
+        previousState.render(sb);
+
         sb.begin();
 
         sb.draw(loseOverlay, 340, 290 , 550, 460);

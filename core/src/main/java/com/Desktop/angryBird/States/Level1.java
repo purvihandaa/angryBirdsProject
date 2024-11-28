@@ -331,10 +331,15 @@ public class Level1 extends state {
         } else {
             // No more birds
             if (!arePigsDestroyed()) {
-                GameLost = true;
-            } else {
-                GameWon = true;
+                // If there are pigs left, transition to LoseState
+                gsm.push(new LoseState(gsm,this));
             }
+        }
+
+        // Check if all pigs are destroyed after switching birds
+        if (arePigsDestroyed()) {
+            // If no pigs are left, transition to WinState
+            gsm.push(new WinState(gsm, this));
         }
     }
 
@@ -356,10 +361,8 @@ public class Level1 extends state {
             velocity.y -= GRAVITY * dt;
 
             // Check if the bird goes off-screen
-
             if (currentBird.y < 0 || currentBird.x < 0 || currentBird.x > Gdx.graphics.getWidth()) {
                 switchToNextBird();
-
             }
 
             checkCollisions(); // Check for collisions after updating bird position
@@ -377,7 +380,10 @@ public class Level1 extends state {
             pigDamageTime -= dt;
             if (pigDamageTime <= 0) {
                 pigs.removeIf(pig -> pig.damaged); // Remove damaged pigs after the delay
-                //switchToNextBird(); // Switch to the next bird after removing the pig
+                // Check for win condition after removing pigs
+                if (arePigsDestroyed()) {
+                    gsm.push(new WinState(gsm,this));
+                }
             }
         }
 
@@ -385,6 +391,7 @@ public class Level1 extends state {
 
         currentBird.update(dt);
     }
+
 
     @Override
     public void render(SpriteBatch sb) {

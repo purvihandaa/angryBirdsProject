@@ -20,7 +20,9 @@ public class WinState extends state {
     private Rectangle replayBounds;
     private Vector3 touchPoint;
 
-    public WinState(GameStateManager gsm) {
+    private state previousState;
+
+    public WinState(GameStateManager gsm, state previousState) {
         super(gsm);
         winOverlay = new Texture("CommOverlay.png");
         nextlevel = new Texture("nextLevelb.png");
@@ -33,6 +35,9 @@ public class WinState extends state {
         replayBounds = new Rectangle(430, 360, 80, 80);
 
         touchPoint = new Vector3();
+
+        this.previousState = previousState; // Save the state to render behind the pause screen
+
     }
 
     @Override
@@ -63,6 +68,8 @@ public class WinState extends state {
 
     @Override
     public void render(SpriteBatch sb) {
+        previousState.render(sb);
+
         sb.begin();
 
         sb.draw(winOverlay, 340, 290 , 550, 460);

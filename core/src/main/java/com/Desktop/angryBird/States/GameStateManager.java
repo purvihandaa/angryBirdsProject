@@ -6,7 +6,7 @@ import java.util.Stack; //FIFO
 
 public class GameStateManager {
 
-    private Stack<state> states;
+    public Stack<state> states;
 
     public GameStateManager(){
         states= new Stack<state>();
