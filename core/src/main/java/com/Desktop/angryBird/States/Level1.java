@@ -12,6 +12,7 @@ import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.physics.box2d.BodyDef;
 import com.badlogic.gdx.physics.box2d.PolygonShape;
 import com.badlogic.gdx.physics.box2d.World;
+import com.badlogic.gdx.physics.box2d.Box2DDebugRenderer;
 
 
 import java.util.ArrayList;
@@ -46,8 +47,6 @@ public class Level1 extends state {
     private Texture dot;
 
     private World world;
-
-
 
     private boolean dragging = false;
     private boolean GameWon = false;
@@ -91,11 +90,12 @@ public class Level1 extends state {
             nextBird.y = 95;
         }
 
-        pig2 = new Pig2(1000, 100);
-        pig3 = new Pig3(995, 310);
+
 
         world = new World(new Vector2(0, -9.8f), true);  // Gravity downwards, and the second parameter indicates whether bodies should be sleeping.
 
+        pig2 = new Pig2(world,1000, 100);
+        pig3 = new Pig3(world,995, 310);
 
         slingshot = new Texture("slingshot.png");
         obstacles = new ArrayList<>();
@@ -343,8 +343,10 @@ public class Level1 extends state {
         }
     }
 
+
+
     private boolean arePigsDestroyed() {
-        return pigs.isEmpty() || pigs.stream().allMatch(pig -> pig.damaged);
+        return pigs.isEmpty() || pigs.stream().allMatch(pig -> pig.isReadyToRemove());
     }
 
     @Override
@@ -374,6 +376,10 @@ public class Level1 extends state {
                 obstacle.body.setTransform(obstacle.body.getPosition().x, 0, 0); // Reset to ground level
                 obstacle.body.setLinearVelocity(0, 0); // Stop any further movement
             }
+        }
+
+        for (Pigs pig : pigs) {
+            pig.update(dt);
         }
 
         if (pigDamageTime > 0) {
