@@ -2,7 +2,7 @@ package com.Desktop.angryBird.Sprites;
 
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
-import com.badlogic.gdx.physics.box2d.World;
+import com.badlogic.gdx.physics.box2d.*;
 import com.badlogic.gdx.math.Vector2;
 
 import static com.Desktop.angryBird.States.BaseLevel.PPM;
@@ -19,16 +19,39 @@ public class Obst7 extends Obstacles {
         texture = new Texture("obj7.png");
 
         // Create the body for the obstacle (scale to Box2D world)
-        createBody(x, y, width, height);
+        createBody(world, x, y, width, height);
     }
 
-    // Adjust the creation of the Box2D body to correctly scale the obstacle
-    private void createBody(float x, float y, float width, float height) {
-        // Here you should define your Box2D body creation logic (e.g., using a box shape)
-        // Scale by PPM to convert from world coordinates to screen coordinates
-        Vector2 position = new Vector2(x, y);
-        // Create Box2D body (you may need to update this based on your original body creation code)
+    private void createBody(World world, float x, float y, float width, float height) {
+        // Box2D body definition
+        BodyDef bodyDef = new BodyDef();
+        bodyDef.type = BodyDef.BodyType.StaticBody;  // Assuming the obstacles are static (non-moving)
+        bodyDef.position.set(x / PPM, y / PPM); // Convert to world coordinates
+
+        // Create the Box2D body
+        Body body = world.createBody(bodyDef);
+
+        // Box2D shape
+        PolygonShape shape = new PolygonShape();
+        shape.setAsBox(width / 2 / PPM, height / 2 / PPM);  // Convert to world units
+
+        // Create a fixture for the obstacle
+        FixtureDef fixtureDef = new FixtureDef();
+        fixtureDef.shape = shape;
+        fixtureDef.density = 0;  // Static obstacles should not have density
+        fixtureDef.friction = 0.5f;  // Adjust friction if needed
+        fixtureDef.restitution = 0.2f;  // Bounce effect when collided
+
+        // Attach the fixture to the body
+        body.createFixture(fixtureDef);
+        shape.dispose();  // Dispose of the shape after use
+
+        // Store the body to reference it later for rendering
+        this.body = body;
     }
+
+
+
 
     @Override
     public void render(SpriteBatch sb) {

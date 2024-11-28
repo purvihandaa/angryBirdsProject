@@ -8,7 +8,9 @@ import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.physics.box2d.BodyDef;
+import com.badlogic.gdx.physics.box2d.PolygonShape;
 import com.badlogic.gdx.physics.box2d.World;
 
 
@@ -120,6 +122,8 @@ public class Level1 extends state {
         pigs = new ArrayList<>();
         pigs.add(pig2);
         pigs.add(pig3);
+
+        createGround();
     }
 
     @Override
@@ -219,6 +223,24 @@ public class Level1 extends state {
         }
     }
 
+    private static final float GROUND_Y = 50f; // Define the ground level
+    private static final float SCREEN_WIDTH = 1200f; // Define screen width
+    private static final float SCREEN_HEIGHT = 750f; // Define screen height
+
+    private void createGround() {
+        BodyDef groundBodyDef = new BodyDef();
+        groundBodyDef.position.set(SCREEN_WIDTH / 2 / PPM, GROUND_Y / PPM); // Centered on the screen
+        Body groundBody = world.createBody(groundBodyDef);
+
+        // Create a box shape for the ground
+        PolygonShape groundBox = new PolygonShape();
+        groundBox.setAsBox(SCREEN_WIDTH / 2 / PPM, 50 / PPM); // Width and height of the ground
+
+        // Create fixture for the ground
+        groundBody.createFixture(groundBox, 0.0f);
+        groundBox.dispose(); // Dispose of the shape after use
+    }
+
 
     private void checkCollisions() {
         Rectangle birdBounds = currentBird.getBounds();
@@ -227,32 +249,58 @@ public class Level1 extends state {
         for (Pigs pig : pigs) {
             if (!pig.damaged && birdBounds.overlaps(pig.getBounds())) {
                 pig.damage(); // Mark pig as damaged
-                isLaunched = false; // Stop the bird after hitting the pig
-                pigDamageTime = 1f; // Start timer to remove pig after 1 second
+                pigDamageTime = 1f;
+                // Start timer to remove pig after 1 second
             }
         }
 
         // Check collision with obstacles
         for (Obstacles obstacle : obstacles) {
             if (birdBounds.overlaps(obstacle.getBounds())) {
-                System.out.println("Collision detected with obstacle: " + obstacle); // Debug output
+                System.out.println("Collision detected with obstacle: " + obstacle);
 
-                // Check if the obstacle is currently static
                 if (obstacle.body.getType() == BodyDef.BodyType.StaticBody) {
-                    // Change the body type to dynamic to allow it to fall
+                    // Change the body type to dynamic
                     obstacle.body.setType(BodyDef.BodyType.DynamicBody);
-
-                    // Debug output to confirm the change
                     System.out.println("Obstacle type after change: " + obstacle.body.getType());
-                }
 
-                // Optionally, reset the bird's position or state after collision
-                isLaunched = false;
-                currentBird.x = initialBirdX; // Reset position if needed
-                currentBird.y = initialBirdY;
+                    // Apply an initial impulse to the obstacle to the right
+                    float impulseX = 5f; // Adjusted impulse to the right
+                    float impulseY = 5f; // Adjusted upward impulse
+                    obstacle.body.applyLinearImpulse(new Vector2(impulseX, impulseY), obstacle.body.getWorldCenter(), true);
+                }
             }
+
+            // Check if the obstacle is below the ground level
+            if (obstacle.body.getPosition().y < GROUND_Y / PPM) {
+                // Set the obstacle's position to the ground level
+                obstacle.body.setTransform(obstacle.body.getPosition().x, GROUND_Y / PPM, 0);
+                obstacle.body.setLinearVelocity(0, 0); // Stop any further movement
+            }
+
+            // Prevent obstacles from going off-screen
+            if (obstacle.body.getPosition().x < 0) {
+                obstacle.body.setTransform(0, obstacle.body.getPosition().y, 0); // Reset to left boundary
+            } else if (obstacle.body.getPosition().x > SCREEN_WIDTH / PPM) {
+                obstacle.body.setTransform(SCREEN_WIDTH / PPM, obstacle.body.getPosition().y, 0); // Reset to right boundary
+            }
+
+            // Limit the velocity of the obstacle to prevent it from flying off-screen
+            limitObstacleVelocity(obstacle);
+        }
+
+    }
+
+    private void limitObstacleVelocity(Obstacles obstacle) {
+        Vector2 velocity = obstacle.body.getLinearVelocity();
+        float maxVelocity = 10f; // Set a maximum velocity
+
+        if (velocity.len() > maxVelocity) {
+            velocity.nor().scl(maxVelocity); // Normalize and scale to max velocity
+            obstacle.body.setLinearVelocity(velocity);
         }
     }
+
     private void destroyPig(Pigs pig) {
         pig.setTexture(new Texture("pig_damaged.png")); // Change to destroyed pig texture
         // Add more logic here if required, like animations or score increment
@@ -307,19 +355,29 @@ public class Level1 extends state {
 
             velocity.y -= GRAVITY * dt;
 
+            // Check if the bird goes off-screen
 
             if (currentBird.y < 0 || currentBird.x < 0 || currentBird.x > Gdx.graphics.getWidth()) {
                 switchToNextBird();
+
             }
 
             checkCollisions(); // Check for collisions after updating bird position
+        }
+
+        // Update obstacles and check if they go off-screen
+        for (Obstacles obstacle : obstacles) {
+            if (obstacle.body.getPosition().y < 0) {
+                obstacle.body.setTransform(obstacle.body.getPosition().x, 0, 0); // Reset to ground level
+                obstacle.body.setLinearVelocity(0, 0); // Stop any further movement
+            }
         }
 
         if (pigDamageTime > 0) {
             pigDamageTime -= dt;
             if (pigDamageTime <= 0) {
                 pigs.removeIf(pig -> pig.damaged); // Remove damaged pigs after the delay
-                switchToNextBird(); // Switch to the next bird after removing the pig
+                //switchToNextBird(); // Switch to the next bird after removing the pig
             }
         }
 
@@ -338,10 +396,14 @@ public class Level1 extends state {
         renderSlingshotBand(sb);
 
         sb.begin();
-        currentBird.render(sb);
+//        currentBird.render(sb);
+//
+//        if (nextBird != null) {
+//            nextBird.render(sb);
+//        }
 
-        if (nextBird != null) {
-            nextBird.render(sb);
+        for (Bird bird : birdQueue) {
+            bird.render(sb);
         }
 
         for (Pigs pig : pigs) {
