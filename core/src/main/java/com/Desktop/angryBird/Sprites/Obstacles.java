@@ -52,16 +52,25 @@ public abstract class Obstacles {
         Rectangle obstacleBounds = getBounds();
 
         if (birdBounds.overlaps(obstacleBounds)) {
-            // Calculate impulse based on the bird's "simulated" velocity and mass
+            // Get the bird's linear velocity from its Box2D body
+            Vector2 birdVelocity = bird.body.getLinearVelocity();
+
+            // Calculate impulse based on the bird's velocity and mass
             Vector2 impulse = new Vector2(
-                bird.getVelocity().x * bird.getMass(),  // Bird's velocity and mass factor
-                bird.getVelocity().y * bird.getMass()
+                birdVelocity.x * bird.body.getMass(),
+                birdVelocity.y * bird.body.getMass()
             );
 
+            // Apply the impulse to the obstacle body
             body.applyLinearImpulse(impulse, body.getWorldCenter(), true);
 
-            // Optional: Adjust the damping or restitution dynamically based on impact
-            body.setLinearDamping(0.5f); // Adds some damping for more realistic fall
+            // Dynamically adjust body properties on collision
+            body.setLinearDamping(0.5f);
+
+            // Optional: Change body type if it was static
+            if (body.getType() == BodyDef.BodyType.StaticBody) {
+                body.setType(BodyDef.BodyType.DynamicBody);
+            }
         }
     }
 

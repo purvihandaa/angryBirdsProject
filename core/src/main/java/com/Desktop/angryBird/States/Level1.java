@@ -70,12 +70,14 @@ public class Level1 extends state {
 
     public Level1(GameStateManager gsm) {
         super(gsm);
+        world = new World(new Vector2(0, -9.8f), true);  // Gravity downwards, and the second parameter indicates whether bodies should be sleeping.
+
         sr = new ShapeRenderer();
         bg = new Texture("bg.jpg");
         pauseButton = new Texture("pause.png");
-        redBird = new RedBird(150, 195);
-        birdYellow = new YellowBird(50, 95);
-        birdBlack = new BlackBird(100, 105);
+        redBird = new RedBird( world,150, 195);
+        birdYellow = new YellowBird(world,50, 95);
+        birdBlack = new BlackBird(world,100, 105);
 
         birdQueue = new ArrayList<>();
         birdQueue.add(redBird);
@@ -86,13 +88,10 @@ public class Level1 extends state {
 
         if (birdQueue.size() > 1) {
             nextBird = birdQueue.get(1);
-            nextBird.x = 40; // Position beneath the slingshot
-            nextBird.y = 95;
+            nextBird.body.setTransform(40 / PPM, 95 / PPM, 0);
+//            nextBird.x = 40; // Position beneath the slingshot
+//            nextBird.y = 95;
         }
-
-
-
-        world = new World(new Vector2(0, -9.8f), true);  // Gravity downwards, and the second parameter indicates whether bodies should be sleeping.
 
         pig2 = new Pig2(world,1000, 100);
         pig3 = new Pig3(world,995, 310);
@@ -307,8 +306,8 @@ public class Level1 extends state {
     }
 
     private void switchToNextBird() {
-        isLaunched = false;
-        velocity.set(0, 0);
+        // Stop the current bird's physics body
+        currentBird.body.setLinearVelocity(0, 0);
 
         // Remove the current bird from the queue
         birdQueue.remove(0);
@@ -317,14 +316,15 @@ public class Level1 extends state {
         if (!birdQueue.isEmpty()) {
             // Set the next bird to the slingshot
             currentBird = birdQueue.get(0);
-            currentBird.x = 150;  // Slingshot primary position
-            currentBird.y = 195;
+
+            // Reset bird position to slingshot
+            currentBird.body.setTransform(150 / PPM, 195 / PPM, 0);
+            currentBird.body.setLinearVelocity(0, 0);
 
             // If more than one bird left, position the next bird beneath
             if (birdQueue.size() > 1) {
                 nextBird = birdQueue.get(1);
-                nextBird.x = 40;
-                nextBird.y = 95;
+                nextBird.body.setTransform(40 / PPM, 95 / PPM, 0);
             } else {
                 nextBird = null;
             }
@@ -332,7 +332,7 @@ public class Level1 extends state {
             // No more birds
             if (!arePigsDestroyed()) {
                 // If there are pigs left, transition to LoseState
-                gsm.push(new LoseState(gsm,this));
+                gsm.push(new LoseState(gsm, this));
             }
         }
 
@@ -342,6 +342,7 @@ public class Level1 extends state {
             gsm.push(new WinState(gsm, this));
         }
     }
+
 
 
 

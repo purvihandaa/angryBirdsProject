@@ -4,32 +4,84 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.physics.box2d.*;
+
+import static com.Desktop.angryBird.States.BaseLevel.PPM;
 
 public abstract class Bird {
     protected Texture texture;
     public float x, y;
-    public float width = 70;
-    public float height = 70;
+    public float width = 70 / PPM;
+    public float height = 70 / PPM;
     public int power = 1000;
-    private Vector2 velocity = new Vector2(0, 0);  // Default velocity initialized
-    private float mass = 1.0f;
-    private boolean isLaunched = false;
-    private final float gravity = 9.8f;  // Gravity constant for realistic physics
 
-    public Bird(float x, float y, String texturePath) {
+    protected World world;
+    public Body body;
+    protected BodyDef bodyDef;
+    protected FixtureDef fixtureDef;
+    protected PolygonShape shape;
+
+    private boolean isLaunched = false;
+
+    public Bird(World world, float x, float y, String texturePath) {
+        this.world = world;
         this.x = x;
         this.y = y;
         this.texture = new Texture(texturePath);
+
+        // Create Box2D body
+        createBody();
+    }
+
+    private void createBody() {
+        // Body Definition
+        bodyDef = new BodyDef();
+        bodyDef.type = BodyDef.BodyType.DynamicBody;
+        bodyDef.position.set(x / PPM, y / PPM);
+        bodyDef.bullet = true; // Continuous collision detection
+
+        // Create body in the world
+        body = world.createBody(bodyDef);
+
+        // Shape
+        shape = new PolygonShape();
+        shape.setAsBox(width / 2, height / 2);
+
+        // Fixture Definition
+        fixtureDef = new FixtureDef();
+        fixtureDef.shape = shape;
+        fixtureDef.density = 1.0f;
+        fixtureDef.friction = 0.5f;
+        fixtureDef.restitution = 0.3f; // Bounciness
+
+        // Create fixture
+        body.createFixture(fixtureDef);
+
+        // Clean up
+        shape.dispose();
     }
 
     public abstract void update(float dt);
 
     public void render(SpriteBatch sb) {
-        sb.draw(texture, x, y, width, height);
+        // Get the body's current position
+        Vector2 bodyPosition = body.getPosition();
+
+        // Convert Box2D coordinates to screen coordinates
+        float renderX = bodyPosition.x * PPM - width * PPM / 2;
+        float renderY = bodyPosition.y * PPM - height * PPM / 2;
+
+        sb.draw(texture, renderX, renderY, width * PPM, height * PPM);
     }
 
     public Rectangle getBounds() {
-        return new Rectangle(x, y, width, height);
+        Vector2 pos = body.getPosition();
+        return new Rectangle(
+            pos.x * PPM - width * PPM / 2,
+            pos.y * PPM - height * PPM / 2,
+            width * PPM,
+            height * PPM
+        );
     }
 
     // Reduce power when colliding with an obstacle
@@ -44,44 +96,30 @@ public abstract class Bird {
         if (texture != null) {
             texture.dispose();
         }
-    }
-
-    public Vector2 getVelocity() {
-        return velocity;
-    }
-
-    public void setVelocity(Vector2 velocity) {
-        this.velocity = velocity;
+        // Remove the body from the world
+        if (body != null) {
+            world.destroyBody(body);
+        }
     }
 
     public void launch(Vector2 initialVelocity) {
-        this.velocity.set(initialVelocity);
-        this.isLaunched = true;
-    }
-
-    public float getMass() {
-        return mass;
-    }
-
-    public void setMass(float mass) {
-        this.mass = mass;
+        body.setLinearVelocity(initialVelocity);
+        isLaunched = true;
     }
 
     public boolean isLaunched() {
         return isLaunched;
     }
 
-    public void update(float dt, float gravity) {
-        if (isLaunched) {
-            velocity.y -= gravity * dt;
-            x += velocity.x * dt;
-            y += velocity.y * dt;
+    // Method to check if the bird is out of bounds
+    public boolean isOutOfBounds() {
+        Vector2 pos = body.getPosition();
+        return pos.y < 0 || pos.x < 0 || pos.x > com.badlogic.gdx.Gdx.graphics.getWidth() / PPM;
+    }
 
-            // Reset velocity and position when out of screen bounds
-            if (y < 0 || x < 0 || x > com.badlogic.gdx.Gdx.graphics.getWidth()) {
-                velocity.set(0, 0);
-                isLaunched = false;
-            }
-        }
+    // Additional method to reset bird state
+    public void reset() {
+        isLaunched = false;
+        body.setLinearVelocity(0, 0);
     }
 }

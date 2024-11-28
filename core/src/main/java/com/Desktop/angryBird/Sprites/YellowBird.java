@@ -1,9 +1,11 @@
 package com.Desktop.angryBird.Sprites;
 
+import com.badlogic.gdx.physics.box2d.World;
+
 public class YellowBird extends Bird {
 
-    public YellowBird(float x, float y) {
-        super(x, y, "birdYellow.png");
+    public YellowBird(World world,float x, float y) {
+        super( world,x, y, "birdYellow.png");
     }
 
     @Override
