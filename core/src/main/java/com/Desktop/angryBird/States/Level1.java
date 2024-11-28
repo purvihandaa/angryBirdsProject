@@ -75,9 +75,9 @@ public class Level1 extends state {
         sr = new ShapeRenderer();
         bg = new Texture("bg.jpg");
         pauseButton = new Texture("pause.png");
-        redBird = new RedBird( world,150, 195);
-        birdYellow = new YellowBird(world,50, 95);
-        birdBlack = new BlackBird(world,100, 105);
+        redBird = new RedBird( world,155, 195);
+        birdYellow = new YellowBird(world,50, 145);
+        birdBlack = new BlackBird(world,100, 145);
 
         birdQueue = new ArrayList<>();
         birdQueue.add(redBird);
@@ -125,6 +125,8 @@ public class Level1 extends state {
         createGround();
     }
 
+
+
     @Override
     protected void handleInput() {
         float touchX = Gdx.input.getX();
@@ -155,21 +157,24 @@ public class Level1 extends state {
             }
 
             // Move bird back based on drag
-            currentBird.x = 150 -dx;
-            currentBird.y = 195 +dy;
+            currentBird.x = 150 - dx; // Update bird's x position
+            currentBird.y = 195 + dy; // Update bird's y position
             updateTrajectory(150, 195, -dx, -dy, speedMultiplier);
         }
 
         if (!Gdx.input.isTouched() && dragging) {
             dragging = false;
-            velocity.x = -(touchX - 150) * 0.5f * speedMultiplier;
-            velocity.y = (195 - touchY) * 0.5f * speedMultiplier;
+            velocity.x = -(touchX - 150) * 0.5f * speedMultiplier/50;
+            velocity.y = (195 - touchY) * 0.5f * speedMultiplier/50;
             isLaunched = true;
+
+            // Launch the bird
+            currentBird.launch(new Vector2(velocity.x, velocity.y));
+            // Reset position to slingshot
             currentBird.x = initialBirdX;
             currentBird.y = initialBirdY;
         }
     }
-
     private void updateTrajectory(float originX, float originY, float dx, float dy, float speedMultiplier) {
         trajectoryDots.clear();
         float velocityX = -dx * speedMultiplier;
@@ -192,7 +197,6 @@ public class Level1 extends state {
     }
 
     private void renderSlingshotBand(SpriteBatch sb) {
-        // Slingshot band anchor points (adjust these coordinates to match your slingshot position)
         float leftAnchorX = 175;
         float leftAnchorY = 200;
         float rightAnchorX = 200;
@@ -203,8 +207,9 @@ public class Level1 extends state {
             float touchX = Gdx.input.getX();
             float touchY = Gdx.graphics.getHeight() - Gdx.input.getY();
 
-            float birdX = 150 + (touchX - 175) * 0.5f;
-            float birdY = 195 - (200 - touchY) * 0.99f;
+            // Update the bird's position based on the drag
+            float birdX = 150 - (touchX - 150); // Adjusted to move with slingshot
+            float birdY = 195 + (touchY - 195); // Adjusted to move with slingshot
             currentBird.x = birdX;
             currentBird.y = birdY;
 
@@ -219,6 +224,11 @@ public class Level1 extends state {
             sr.rectLine(rightAnchorX, rightAnchorY, touchX, touchY, 5);
 
             sr.end();
+
+            // Render the bird at its updated position
+            sb.begin();
+            currentBird.render(sb); // Render the current bird at the updated position
+            sb.end();
         }
     }
 
@@ -308,6 +318,7 @@ public class Level1 extends state {
     private void switchToNextBird() {
         // Stop the current bird's physics body
         currentBird.body.setLinearVelocity(0, 0);
+        currentBird.reset(); // Reset the bird's state
 
         // Remove the current bird from the queue
         birdQueue.remove(0);
@@ -319,14 +330,18 @@ public class Level1 extends state {
 
             // Reset bird position to slingshot
             currentBird.body.setTransform(150 / PPM, 195 / PPM, 0);
-            currentBird.body.setLinearVelocity(0, 0);
+            currentBird.body.setLinearVelocity(0, 0); // Ensure the bird is stationary
+
+            // Reset the dragging and launched state
+            dragging = false;
+            isLaunched = false;
 
             // If more than one bird left, position the next bird beneath
             if (birdQueue.size() > 1) {
                 nextBird = birdQueue.get(1);
                 nextBird.body.setTransform(40 / PPM, 95 / PPM, 0);
             } else {
-                nextBird = null;
+                nextBird = null; // No more birds left
             }
         } else {
             // No more birds
@@ -335,20 +350,13 @@ public class Level1 extends state {
                 gsm.push(new LoseState(gsm, this));
             }
         }
-
-        // Check if all pigs are destroyed after switching birds
-        if (arePigsDestroyed()) {
-            // If no pigs are left, transition to WinState
-            gsm.push(new WinState(gsm, this));
-        }
     }
-
-
 
 
     private boolean arePigsDestroyed() {
         return pigs.isEmpty() || pigs.stream().allMatch(pig -> pig.isReadyToRemove());
     }
+
 
     @Override
     public void update(float dt) {
@@ -358,13 +366,11 @@ public class Level1 extends state {
         handleInput();
 
         if (isLaunched) {
-            currentBird.x += velocity.x * dt;
-            currentBird.y += velocity.y * dt;
-
-            velocity.y -= GRAVITY * dt;
+            // Update the bird's position based on its physics body
+            currentBird.update(dt);
 
             // Check if the bird goes off-screen
-            if (currentBird.y < 0 || currentBird.x < 0 || currentBird.x > Gdx.graphics.getWidth()) {
+            if (currentBird.isOutOfBounds()) {
                 switchToNextBird();
             }
 
@@ -389,14 +395,12 @@ public class Level1 extends state {
                 pigs.removeIf(pig -> pig.damaged); // Remove damaged pigs after the delay
                 // Check for win condition after removing pigs
                 if (arePigsDestroyed()) {
-                    gsm.push(new WinState(gsm,this));
+                    gsm.push(new WinState(gsm, this));
                 }
             }
         }
 
         obstacles.removeIf(obstacle -> obstacle.isToRemove());
-
-        currentBird.update(dt);
     }
 
 
@@ -407,23 +411,25 @@ public class Level1 extends state {
         sb.draw(pauseButton, 10, Gdx.graphics.getHeight() - 90, 80, 80);
         sb.draw(slingshot, 130, 100, 120, 120);
         sb.end();
+
+        // Render the slingshot band and update the bird's position if dragging
         renderSlingshotBand(sb);
 
         sb.begin();
-//        currentBird.render(sb);
-//
-//        if (nextBird != null) {
-//            nextBird.render(sb);
-//        }
+        // Render the current bird at its updated position
+        currentBird.render(sb); // Render the current bird
 
-        for (Bird bird : birdQueue) {
-            bird.render(sb);
+        // Render the next bird if it exists
+        if (nextBird != null) {
+            nextBird.render(sb);
         }
 
+        // Render pigs
         for (Pigs pig : pigs) {
             pig.render(sb); // Render only pigs that are not destroyed
         }
 
+        // Render obstacles
         obstacle1A.render(sb);
         obstacle1B.render(sb);
         obstacle4.render(sb);
@@ -431,6 +437,7 @@ public class Level1 extends state {
         obstaclestA.render(sb);
         obstaclestB.render(sb);
 
+        // Render trajectory dots if dragging
         if (dragging) {
             for (Vector2 dotPosition : trajectoryDots) {
                 sb.draw(dot, dotPosition.x, dotPosition.y, 10, 10);

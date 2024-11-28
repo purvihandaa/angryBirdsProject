@@ -36,7 +36,7 @@ public abstract class Bird {
     private void createBody() {
         // Body Definition
         bodyDef = new BodyDef();
-        bodyDef.type = BodyDef.BodyType.DynamicBody;
+        bodyDef.type = BodyDef.BodyType.StaticBody; // Set to StaticBody initially
         bodyDef.position.set(x / PPM, y / PPM);
         bodyDef.bullet = true; // Continuous collision detection
 
@@ -52,7 +52,7 @@ public abstract class Bird {
         fixtureDef.shape = shape;
         fixtureDef.density = 1.0f;
         fixtureDef.friction = 0.5f;
-        fixtureDef.restitution = 0.3f; // Bounciness
+        fixtureDef.restitution = 0.01f; // Bounciness
 
         // Create fixture
         body.createFixture(fixtureDef);
@@ -103,6 +103,7 @@ public abstract class Bird {
     }
 
     public void launch(Vector2 initialVelocity) {
+        body.setType(BodyDef.BodyType.DynamicBody); // Change to DynamicBody when launching
         body.setLinearVelocity(initialVelocity);
         isLaunched = true;
     }
@@ -121,5 +122,6 @@ public abstract class Bird {
     public void reset() {
         isLaunched = false;
         body.setLinearVelocity(0, 0);
+        body.setType(BodyDef.BodyType.StaticBody); // Reset to StaticBody
     }
 }
