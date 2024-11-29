@@ -5,7 +5,7 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Rectangle;
 
-public class PauseState extends state {
+public class PauseState1 extends state {
     private Texture overlay;
     private Texture play;
     private Texture restart;
@@ -17,7 +17,7 @@ public class PauseState extends state {
 
     private state previousState; // Reference to the state being paused
 
-    public PauseState(GameStateManager gsm, state previousState) {
+    public PauseState1(GameStateManager gsm, state previousState) {
         super(gsm);
         this.previousState = previousState; // Save the state to render behind the pause screen
 

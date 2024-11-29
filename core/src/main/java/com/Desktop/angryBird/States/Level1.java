@@ -5,7 +5,6 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
-import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.physics.box2d.Body;
@@ -157,7 +156,7 @@ public class Level1 extends state {
         if (Gdx.input.justTouched()) {
 
             if (touchX < 100 && touchY > Gdx.graphics.getHeight() - 100) {
-                gsm.push(new PauseState(gsm, this));
+                gsm.push(new PauseState1(gsm, this));
                 return;
             }
             if (!isLaunched && currentBird.getBounds().contains(touchX, touchY)) {
@@ -336,74 +335,6 @@ public class Level1 extends state {
     }
 
 
-//    private void checkCollisions() {
-//        Rectangle birdBounds = currentBird.getBounds();
-//
-//        // Check collision with pigs
-//        for (Pigs pig : pigs) {
-//            if (!pig.damaged && birdBounds.overlaps(pig.getBounds())) {
-//                pig.damage(); // Mark pig as damaged
-//                pigDamageTime = 1f;
-//                pig.isDisposed = true;
-//            }
-//
-//            // Check if the pig is outside the left or right boundaries
-//            float pigX = pig.body.getPosition().x * PPM; // Convert to screen coordinates
-//            if (pigX < 0) {
-//                pig.body.setTransform(0, pig.body.getPosition().y, 0); // Reset to left boundary
-//                pig.body.setLinearVelocity(0, 0); // Stop any further movement
-//                System.out.println("Pig reset to left boundary");
-//            } else if (pigX > SCREEN_WIDTH) {
-//                pig.body.setTransform(SCREEN_WIDTH / PPM, pig.body.getPosition().y, 0); // Reset to right boundary
-//                pig.body.setLinearVelocity(0, 0); // Stop any further movement
-//                System.out.println("Pig reset to right boundary");
-//            }
-//        }
-//
-//        // Check collision with obstacles
-//        for (Obstacles obstacle : obstacles) {
-//            if (birdBounds.overlaps(obstacle.getBounds())) {
-//                obstacle.isDisposed = true;
-//                System.out.println("Collision detected with obstacle: " + obstacle);
-//
-//                if (obstacle.body.getType() == BodyDef.BodyType.StaticBody) {
-//                    // Change the body type to dynamic
-//                    obstacle.body.setType(BodyDef.BodyType.DynamicBody);
-//                    System.out.println("Obstacle type after change: " + obstacle.body.getType());
-//
-//                    float impulseX = 5f; // Adjusted impulse to the right
-//                    float impulseY = 5f; // Adjusted upward impulse
-//                    obstacle.body.applyLinearImpulse(new Vector2(impulseX, impulseY), obstacle.body.getWorldCenter(), true);
-//                }
-//            }
-//
-//            // Check if the obstacle is below the ground level
-//            if (obstacle.body.getPosition().y < GROUND_Y / PPM) {
-//                obstacle.body.setTransform(obstacle.body.getPosition().x, GROUND_Y / PPM, 0);
-//                obstacle.body.setLinearVelocity(0, 0); // Stop any further movement
-//            }
-//
-//            // Prevent obstacles from going off-screen horizontally
-//            float obstacleX = obstacle.body.getPosition().x * PPM; // Convert to screen coordinates
-//
-//            // Log the position for debugging
-//            System.out.println("Obstacle Position: (" + obstacleX + ", " + obstacle.body.getPosition().y * PPM + ")");
-//
-//            if (obstacleX < 0) {
-//                obstacle.body.setTransform(0, obstacle.body.getPosition().y, 0); // Reset to left boundary
-//                obstacle.body.setLinearVelocity(0, 0); // Stop any further movement
-//                System.out.println("Obstacle reset to left boundary");
-//            } else if (obstacleX > SCREEN_WIDTH) {
-//                obstacle.body.setTransform(SCREEN_WIDTH / PPM, obstacle.body.getPosition().y, 0); // Reset to right boundary
-//                obstacle.body.setLinearVelocity(0, 0); // Stop any further movement
-//                System.out.println("Obstacle reset to right boundary");
-//            }
-//
-//            // Limit the velocity of the obstacle to prevent it from flying off-screen
-//            limitObstacleVelocity(obstacle);
-//        }
-//    }
-
     private void limitObstacleVelocity(Obstacles obstacle) {
         Vector2 velocity = obstacle.body.getLinearVelocity();
         float maxVelocity = 10f; // Set a maximum velocity
@@ -449,7 +380,7 @@ public class Level1 extends state {
             // No more birds
             if (!arePigsDestroyed()) {
                 // If there are pigs left, transition to LoseState
-                gsm.push(new LoseState(gsm, this));
+                gsm.push(new LoseState1(gsm, this));
             }
         }
     }
@@ -526,7 +457,7 @@ public class Level1 extends state {
 
 
         if (arePigsDestroyed()) {
-            gsm.push(new WinState(gsm, this)); // Transition to win state
+            gsm.push(new WinState1(gsm, this)); // Transition to win state
         }
 
         world.step(dt, 6, 2);

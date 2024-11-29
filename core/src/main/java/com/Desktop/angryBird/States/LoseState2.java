@@ -1,42 +1,37 @@
 package com.Desktop.angryBird.States;
 
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Rectangle;
-import com.badlogic.gdx.math.Vector3;
-import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.Input;
 
-public class WinState extends state {
+public class LoseState2 extends state {
 
-    private Texture winOverlay;
-    private Texture nextlevel;
+    private Texture loseOverlay;
+    private Texture sadbird;
     private Texture menu;
     private Texture replay;
-    private Texture welldone;
+    private Texture soclose;
 
-    private Rectangle nextLevelBounds;
     private Rectangle menuBounds;
     private Rectangle replayBounds;
-    private Vector3 touchPoint;
 
     private state previousState;
 
-    public WinState(GameStateManager gsm, state previousState) {
+
+    public LoseState2(GameStateManager gsm, state previousState) {
         super(gsm);
-        winOverlay = new Texture("CommOverlay.png");
-        nextlevel = new Texture("nextLevelb.png");
+
+        loseOverlay = new Texture("CommOverlay.png");
         menu = new Texture("menub.png");
         replay = new Texture("replayb.png");
-        welldone = new Texture("welldone.png");
+        soclose = new Texture("soclose.png");
+        sadbird = new Texture("sadbird.png");
 
-        nextLevelBounds = new Rectangle(580, 360, 90,90);
-        menuBounds = new Rectangle(730, 360, 80, 80);
-        replayBounds = new Rectangle(430, 360, 80, 80);
-
-        touchPoint = new Vector3();
-
+        menuBounds = new Rectangle(740, 320, 80, 80);
+        replayBounds = new Rectangle(450, 320, 80, 80);
         this.previousState = previousState; // Save the state to render behind the pause screen
+
 
     }
 
@@ -47,23 +42,21 @@ public class WinState extends state {
         float touchY = Gdx.graphics.getHeight() - Gdx.input.getY();
         if (Gdx.input.justTouched()) {
 
-            if (nextLevelBounds.contains(touchX, touchY)) {
-                gsm.set(new MenuState(gsm));
-            }
-
             if (menuBounds.contains(touchX,touchY)) {
                 gsm.set(new MenuState(gsm));
             }
 
             if (replayBounds.contains(touchX,touchY)) {
-                gsm.set(new Level1(gsm));
+                gsm.set(new Level2(gsm));
             }
         }
+
     }
 
     @Override
     public void update(float dt) {
         handleInput();
+
     }
 
     @Override
@@ -72,14 +65,15 @@ public class WinState extends state {
 
         sb.begin();
 
-        sb.draw(winOverlay, 340, 290 , 550, 460);
-        sb.draw(welldone, 450,450,360 ,55);
+        sb.draw(loseOverlay, 340, 290 , 550, 460);
+        sb.draw(soclose, 550,470,150 ,35);
+        sb.draw(sadbird, 565,325,170, 150);
 
-        sb.draw(nextlevel, nextLevelBounds.x, nextLevelBounds.y, nextLevelBounds.width, nextLevelBounds.height);
         sb.draw(menu, menuBounds.x, menuBounds.y, menuBounds.width, menuBounds.height);
         sb.draw(replay, replayBounds.x, replayBounds.y, replayBounds.width, replayBounds.height);
 
         sb.end();
-    }
 
+    }
 }
+
