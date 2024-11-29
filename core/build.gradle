@@ -9,6 +9,13 @@ dependencies {
   api "com.github.lyze237:gdx-UnBox2D:$unbox2dVersion"
   api "space.earlygrey:shapedrawer:$shapeDrawerVersion"
 
+  testImplementation 'junit:junit:4.13.2'
+
+
+
+
+  testImplementation 'org.mockito:mockito-core:5.3.1'
+
 
 
   if(enableGraalNative == 'true') {
