@@ -74,8 +74,10 @@ public abstract class Pigs {
         }
     }
 
+
     public void render(SpriteBatch sb) {
-        sb.draw(texture, x - width/2, y - height/2, width, height);
+        Vector2 position = body.getPosition();
+        sb.draw(texture, position.x * PPM - width / 2, position.y * PPM - height / 2, width, height);
     }
 
     public Rectangle getBounds() {
