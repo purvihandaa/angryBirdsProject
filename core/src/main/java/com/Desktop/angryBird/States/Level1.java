@@ -158,6 +158,10 @@ public class Level1 extends state {
                 gsm.push(new PauseState1(gsm, this));
                 return;
             }
+            if (touchX > 1000 && touchX < 1140 && touchY > 660 && touchY < 720) {
+                saveGameState("savegame.dat");
+                return;
+            }
             if (!isLaunched && currentBird.getBounds().contains(touchX, touchY)) {
                 dragging = true;
                 initialBirdX = currentBird.x;
@@ -200,6 +204,13 @@ public class Level1 extends state {
             currentBird.x = initialBirdX;
             currentBird.y = initialBirdY;
         }
+    }
+
+    private void saveGameState(String filePath) {
+        GameState gameState = new GameState();
+        gameState.setCurrentLevel(1); // Set the current level
+        // Set other game state attributes as needed
+        gameState.saveGameState(filePath);
     }
 
 
@@ -486,6 +497,7 @@ public class Level1 extends state {
     public void render(SpriteBatch sb) {
         sb.begin();
         sb.draw(bg, 0, 0, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
+        sb.draw(savegameButton, 1000, 660, 140, 60);
         sb.draw(pauseButton, 10, Gdx.graphics.getHeight() - 90, 80, 80);
         sb.draw(slingshot, 130, 100, 120, 120);
         sb.end();

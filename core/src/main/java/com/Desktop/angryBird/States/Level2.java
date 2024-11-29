@@ -33,6 +33,7 @@ public class Level2 extends state {
     private Bird currentBird;
     private List<Bird> birdQueue;
     private Bird nextBird;
+    private Texture savegameButton;
 
     private Pig2 pig2;
     private Pig3 pig3;
@@ -85,6 +86,7 @@ public class Level2 extends state {
         redBird = new RedBird( world,190, 205);
         birdYellow = new YellowBird(world,130, 135);
         birdBlack = new BlackBird(world,70, 140);
+        savegameButton=new Texture("savegame.png");
 
         birdQueue = new ArrayList<>();
         birdQueue.add(redBird);
@@ -159,7 +161,12 @@ public class Level2 extends state {
         createSideWalls();
     }
 
-
+    private void saveGameState(String filePath) {
+        GameState gameState = new GameState();
+        gameState.setCurrentLevel(1); // Set the current level
+        // Set other game state attributes as needed
+        gameState.saveGameState(filePath);
+    }
 
     @Override
     protected void handleInput() {
@@ -174,6 +181,10 @@ public class Level2 extends state {
 
             if (touchX < 100 && touchY > Gdx.graphics.getHeight() - 100) {
                 gsm.push(new PauseState2(gsm, this));
+                return;
+            }
+            if (touchX > 1000 && touchX < 1140 && touchY > 660 && touchY < 720) {
+                saveGameState("savegame.dat");
                 return;
             }
             if (!isLaunched && currentBird.getBounds().contains(touchX, touchY)) {
@@ -506,6 +517,7 @@ public class Level2 extends state {
         sb.draw(bg, 0, 0, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
         sb.draw(pauseButton, 10, Gdx.graphics.getHeight() - 90, 80, 80);
         sb.draw(slingshot, 130, 100, 120, 120);
+        sb.draw(savegameButton, 1000, 660, 140, 60);
         sb.end();
 
         // Render the slingshot band and update the bird's position if dragging

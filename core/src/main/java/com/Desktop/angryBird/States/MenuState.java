@@ -13,11 +13,13 @@ public class MenuState extends state {
     private Texture level3;
     private Texture level4;
     private Texture level5;
+    private Texture loadgameButton;
     private Rectangle lev1Bounds;
     private Rectangle lev2Bounds;
     private Rectangle lev3Bounds;
     private Rectangle lev4Bounds;
     private Rectangle lev5Bounds;
+    private Rectangle loadgameButtonBounds;
 
     public MenuState(GameStateManager gsm) {
         super(gsm);
@@ -27,19 +29,33 @@ public class MenuState extends state {
         level3 = new Texture("three.png");
         level4 = new Texture("four.png");
         level5 = new Texture("five.png");
+        loadgameButton = new Texture("loadgame.png");
 
         lev1Bounds = new Rectangle(490, 320, 38, 38);
         lev2Bounds = new Rectangle(645, 325, 38, 38);
         lev3Bounds = new Rectangle(790, 385, 36, 36);
         lev4Bounds = new Rectangle(925, 470, 38, 38);
         lev5Bounds = new Rectangle(1040, 305, 38, 38);
+        loadgameButtonBounds = new Rectangle(1000, 660, 140, 60);
     }
 
+    private void saveGameState(String filePath) {
+        GameState gameState = new GameState();
+        gameState.setCurrentLevel(1); // Set the current level
+        // Set other game state attributes as needed
+        gameState.saveGameState(filePath);
+    }
     @Override
     protected void handleInput() {
         if (Gdx.input.justTouched()) {
             float touchX = Gdx.input.getX();
             float touchY = Gdx.graphics.getHeight() - Gdx.input.getY();
+
+            if (loadgameButtonBounds.contains(touchX, touchY)) {
+                saveGameState("savegame.dat");
+                return;
+
+            }
 
             if (lev1Bounds.contains(touchX, touchY)) {
                 gsm.set(new Level1(gsm));
@@ -70,6 +86,7 @@ public class MenuState extends state {
     public void render(SpriteBatch sb) {
         sb.begin();
         sb.draw(menu, 0, 0, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
+        sb.draw(loadgameButton, loadgameButtonBounds.x, loadgameButtonBounds.y, loadgameButtonBounds.width, loadgameButtonBounds.height);
         sb.draw(level1, lev1Bounds.x, lev1Bounds.y, lev1Bounds.width, lev1Bounds.height);
         sb.draw(level2, lev2Bounds.x, lev2Bounds.y, lev2Bounds.width, lev2Bounds.height);
         sb.draw(level3, lev3Bounds.x, lev3Bounds.y, lev3Bounds.width, lev3Bounds.height);
