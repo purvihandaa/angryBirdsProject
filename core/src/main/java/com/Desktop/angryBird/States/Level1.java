@@ -26,6 +26,7 @@ public class Level1 extends state {
     private ShapeRenderer sr;
     private Texture bg;
     private Texture pauseButton;
+    private Texture savegameButton;
 
     private RedBird redBird;
     private YellowBird birdYellow;
@@ -79,6 +80,7 @@ public class Level1 extends state {
         sr = new ShapeRenderer();
         bg = new Texture("bg.jpg");
         pauseButton = new Texture("pause.png");
+        savegameButton=new Texture("savegame.png");
         redBird = new RedBird( world,190, 205);
         birdYellow = new YellowBird(world,130, 135);
         birdBlack = new BlackBird(world,70, 140);
@@ -111,22 +113,19 @@ public class Level1 extends state {
         obstacles.add(new Obstst(world, (940), (160), 20 / PPM, 130 / PPM));  // (970, 100, 20, 130)
 
 
-        obstacle1A = (Obst1) obstacles.get(0);  // Initialize obstacle1A from the list
+        obstacle1A = (Obst1) obstacles.get(0);
         obstacle1A.body.setUserData(obstacle1A);
 
-        obstacle1B = (Obst1) obstacles.get(1);  // Initialize obstacle1B from the list
+        obstacle1B = (Obst1) obstacles.get(1);
         obstacle1B.body.setUserData(obstacle1B);
 
-        //obstacle4 = (Obst4) obstacles.get(2);   // Initialize obstacle4
-        //obstacle4.body.setUserData(obstacle4);
-
-        obstacle7 = (Obst7) obstacles.get(2);   // Initialize obstacle7
+        obstacle7 = (Obst7) obstacles.get(2);
         obstacle7.body.setUserData(obstacle7);
 
-        obstaclestA = (Obstst) obstacles.get(3); // Initialize obstaclestA
+        obstaclestA = (Obstst) obstacles.get(3);
         obstaclestA.body.setUserData(obstaclestA);
 
-        obstaclestB = (Obstst) obstacles.get(4); // Initialize obstaclestB
+        obstaclestB = (Obstst) obstacles.get(4);
         obstaclestB.body.setUserData(obstaclestB);
 
         dot = new Texture("dots.png");
