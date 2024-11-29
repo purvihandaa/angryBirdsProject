@@ -34,6 +34,7 @@ public class Level2 extends state {
     private List<Bird> birdQueue;
     private Bird nextBird;
     private Texture savegameButton;
+    private Pig1 pig1;
 
     private Pig2 pig2;
     private Pig3 pig3;
@@ -99,6 +100,9 @@ public class Level2 extends state {
             nextBird = birdQueue.get(1);
         }
 
+        pig1 = new Pig1(world,900, 200);
+        pig1.body.setUserData(pig1);
+
         pig2 = new Pig2(world,1000, 100);
         pig2.body.setUserData(pig2);
 
@@ -108,43 +112,23 @@ public class Level2 extends state {
         slingshot = new Texture("slingshot.png");
         obstacles = new ArrayList<>();
 
-        obstacles.add(new Obst1(world, (985), (235), 130 / PPM, 18 / PPM)); // wooden horizontal (969, 230, 130, 20)
-        obstacles.add(new Obst1(world, (985), (295), 130 / PPM, 18 / PPM)); // (969, 290, 130, 20)
-        obstacles.add(new Obst1(world, (885), (235), 130 / PPM, 18 / PPM)); // (969, 290, 130, 20)
-        obstacles.add(new Obst4(world, (200), (260), 55 / PPM, 55 / PPM));  // (970, 250, 40, 40)
-        obstacles.add(new Obst7(world, (990), (265), 40 / PPM, 40 / PPM));  // (1050, 250, 38, 38)
-        obstacles.add(new Obstst(world, (1035), (160), 20 / PPM, 130 / PPM));  // GLASS VERTICAL (1035, 100, 20, 130)
+//        obstacles.add(new Obst1(world, (985), (235), 130 / PPM, 18 / PPM)); // wooden horizontal (969, 230, 130, 20)
+//        obstacles.add(new Obst1(world, (985), (295), 130 / PPM, 18 / PPM)); // (969, 290, 130, 20)
+//        obstacles.add(new Obst1(world, (885), (235), 130 / PPM, 18 / PPM)); // (969, 290, 130, 20)
+//        obstacles.add(new Obst4(world, (200), (260), 55 / PPM, 55 / PPM));  // (970, 250, 40, 40)
+//        obstacles.add(new Obst7(world, (990), (265), 40 / PPM, 40 / PPM));  // (1050, 250, 38, 38)
+//        obstacles.add(new Obstst(world, (1035), (160), 20 / PPM, 130 / PPM));  // GLASS VERTICAL (1035, 100, 20, 130)
+//        obstacles.add(new Obstst(world, (940), (160), 20 / PPM, 130 / PPM));   // (970, 100, 20, 130)
+//        obstacles.add(new Obstst(world, (845), (160), 20 / PPM, 130 / PPM));   // (970, 100, 20, 130)
+//        obstacles.add(new Obstst(world, (800), (290), 20 / PPM, 130 / PPM));   // (970, 100, 20, 130)
+//        obstacles.add(new Obstst(world, (1000), (290), 20 / PPM, 130 / PPM));   // (970, 100, 20, 130)
         obstacles.add(new Obstst(world, (940), (160), 20 / PPM, 130 / PPM));   // (970, 100, 20, 130)
-        obstacles.add(new Obstst(world, (845), (160), 20 / PPM, 130 / PPM));   // (970, 100, 20, 130)
-        obstacles.add(new Obstst(world, (800), (290), 20 / PPM, 130 / PPM));   // (970, 100, 20, 130)
-        obstacles.add(new Obstst(world, (1000), (290), 20 / PPM, 130 / PPM));   // (970, 100, 20, 130)
-
-// Initialize and set user data for all obstacles
-        obstacle1A = (Obst1) obstacles.get(0);
-        obstacle1A.body.setUserData(obstacle1A);
-
-        obstacle1B = (Obst1) obstacles.get(1);
-        obstacle1B.body.setUserData(obstacle1B);
-
-        obstacle1C = (Obst1) obstacles.get(2);
-        obstacle1C.body.setUserData(obstacle1C);
-
-        obstacle4 = (Obst4) obstacles.get(3);
-        obstacle4.body.setUserData(obstacle4);
-
-        obstacle7 = (Obst7) obstacles.get(4);
-        obstacle7.body.setUserData(obstacle7);
-
-        obstaclestA = (Obstst) obstacles.get(5);
-        obstaclestA.body.setUserData(obstaclestA);
-
-        obstaclestB = (Obstst) obstacles.get(6);
-        obstaclestB.body.setUserData(obstaclestB);
-
-        obstaclestC = (Obstst) obstacles.get(7);
-        obstaclestC.body.setUserData(obstaclestC);
-
-
+        obstacles.add(new Obstst(world, (840), (160), 20 / PPM, 130 / PPM));   // (970, 100, 20, 130)
+        obstacles.add(new Obstst(world, (1040), (160), 20 / PPM, 130 / PPM));   // (970, 100, 20, 130)
+        obstacles.add(new Obst1(world, 995, (300), 110 / PPM, 18 / PPM));   // (970, 100, 20, 130)
+        obstacles.add(new Obst1(world, (885), (290), 110 / PPM, 18 / PPM));
+        obstacles.add(new Obstst(world, (940), (400), 20 / PPM, 130 / PPM));   // (970, 100, 20, 130)
+        obstacles.add(new Obst7(world, (885), (290), 40 / PPM,40 / PPM));// (970, 100, 20, 130)
 
 
 
@@ -155,6 +139,7 @@ public class Level2 extends state {
         pigs = new ArrayList<>();
         pigs.add(pig2);
         pigs.add(pig3);
+        pigs.add(pig1);
 
         createGround();
         createCeiling();

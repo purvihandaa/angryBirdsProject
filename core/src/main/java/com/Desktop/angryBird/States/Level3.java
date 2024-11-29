@@ -35,6 +35,7 @@ public class Level3 extends state {
     private Bird nextBird;
     private Texture savegameButton;
 
+    private Pig1 pig1;
     private Pig2 pig2;
     private Pig3 pig3;
     private Texture slingshot;
@@ -95,6 +96,8 @@ public class Level3 extends state {
         if (birdQueue.size() > 1) {
             nextBird = birdQueue.get(1);
         }
+        pig1 = new Pig1(world,900, 200);
+        pig1.body.setUserData(pig1);
 
         pig2 = new Pig2(world,1000, 100);
         pig2.body.setUserData(pig2);
@@ -105,8 +108,20 @@ public class Level3 extends state {
         slingshot = new Texture("slingshot.png");
         obstacles = new ArrayList<>();
         // Positions adjusted considering center-based Box2D coordinate system
+//        obstacles.add(new Obst1(world, (985), (235), 130 / PPM, 20 / PPM)); // (969, 230, 130, 20)
+//        obstacles.add(new Obst1(world, (985), (295), 130 / PPM, 20 / PPM)); // (969, 290, 130, 20)
+        //obstacles.add(new Obst4(world, (200), (260), 55 / PPM, 55 / PPM));   // (970, 250, 40, 40)
+        obstacles.add(new Obst7(world, (990), (265), 40 / PPM, 40 /PPM)); // (1050, 250, 38, 38)
+        obstacles.add(new Obstst(world, (1035), (160), 20 / PPM, 130 / PPM));  // (1080, 98, 20, 130)
+        obstacles.add(new Obstst(world, (940), (160), 20 / PPM, 130 / PPM));  // (970, 100, 20, 130)
+
         obstacles.add(new Obstst(world, (940), (160), 20 / PPM, 130 / PPM));   // (970, 100, 20, 130)
-        obstacles.add(new Obstst(world, (845), (160), 20 / PPM, 130 / PPM));   // (970, 100, 20, 130)
+        obstacles.add(new Obstst(world, (840), (160), 20 / PPM, 130 / PPM));   // (970, 100, 20, 130)
+        obstacles.add(new Obstst(world, (1040), (160), 20 / PPM, 130 / PPM));   // (970, 100, 20, 130)
+        obstacles.add(new Obst1(world, 995, (300), 110 / PPM, 18 / PPM));   // (970, 100, 20, 130)
+        obstacles.add(new Obst1(world, (885), (290), 110 / PPM, 18 / PPM));
+        obstacles.add(new Obstst(world, (940), (400), 20 / PPM, 130 / PPM));   // (970, 100, 20, 130)
+        obstacles.add(new Obst7(world, (885), (290), 40 / PPM,40 / PPM));// (970, 100, 20, 130)
         dot = new Texture("dots.png");
 
         trajectoryDots = new ArrayList<>();
@@ -114,6 +129,7 @@ public class Level3 extends state {
         pigs = new ArrayList<>();
         pigs.add(pig2);
         pigs.add(pig3);
+        pigs.add(pig1);
 
         createGround();
         createCeiling();
