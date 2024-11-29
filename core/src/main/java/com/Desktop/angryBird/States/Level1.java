@@ -21,6 +21,7 @@ import java.util.List;
 import static com.Desktop.angryBird.States.BaseLevel.PPM;
 
 public class Level1 extends state {
+    private Box2DDebugRenderer debugRenderer;
 
     private ShapeRenderer sr;
     private Texture bg;
@@ -71,13 +72,14 @@ public class Level1 extends state {
     public Level1(GameStateManager gsm) {
         super(gsm);
         world = new World(new Vector2(0, -9.8f), true);  // Gravity downwards, and the second parameter indicates whether bodies should be sleeping.
+        debugRenderer = new Box2DDebugRenderer();
 
         sr = new ShapeRenderer();
         bg = new Texture("bg.jpg");
         pauseButton = new Texture("pause.png");
-        redBird = new RedBird( world,155, 195);
-        birdYellow = new YellowBird(world,50, 145);
-        birdBlack = new BlackBird(world,100, 145);
+        redBird = new RedBird( world,190, 205);
+        birdYellow = new YellowBird(world,130, 135);
+        birdBlack = new BlackBird(world,70, 140);
 
         birdQueue = new ArrayList<>();
         birdQueue.add(redBird);
@@ -88,9 +90,6 @@ public class Level1 extends state {
 
         if (birdQueue.size() > 1) {
             nextBird = birdQueue.get(1);
-            nextBird.body.setTransform(40 / PPM, 95 / PPM, 0);
-//            nextBird.x = 40; // Position beneath the slingshot
-//            nextBird.y = 95;
         }
 
         pig2 = new Pig2(world,1000, 100);
@@ -99,12 +98,12 @@ public class Level1 extends state {
         slingshot = new Texture("slingshot.png");
         obstacles = new ArrayList<>();
         // Positions adjusted considering center-based Box2D coordinate system
-        obstacles.add(new Obst1(world, (969), (230), 130 / 50f, 20 / 50f)); // (969, 230, 130, 20)
-        obstacles.add(new Obst1(world, (969), (290), 130 / 50f, 20 / 50f)); // (969, 290, 130, 20)
-        obstacles.add(new Obst4(world, (970), (260), 55 / 50f, 55 / 50f));   // (970, 250, 40, 40)
-        obstacles.add(new Obst7(world, (1050), (250), 20 / 50f, 20 / 50f)); // (1050, 250, 38, 38)
-        obstacles.add(new Obstst(world, (1080), (98), 20 / 50f, 130 / 50f));  // (1080, 98, 20, 130)
-        obstacles.add(new Obstst(world, (970), (100), 20 / 50f, 130 / 50f));  // (970, 100, 20, 130)
+        obstacles.add(new Obst1(world, (969), (230), 130 / PPM, 20 / PPM)); // (969, 230, 130, 20)
+        obstacles.add(new Obst1(world, (969), (290), 130 / PPM, 20 / PPM)); // (969, 290, 130, 20)
+        obstacles.add(new Obst4(world, (970), (260), 55 / PPM, 55 / PPM));   // (970, 250, 40, 40)
+        obstacles.add(new Obst7(world, (1050), (250), 20 / PPM, 20 /PPM)); // (1050, 250, 38, 38)
+        obstacles.add(new Obstst(world, (1080), (98), 20 / PPM, 130 / PPM));  // (1080, 98, 20, 130)
+        obstacles.add(new Obstst(world, (970), (100), 20 / PPM, 130 / PPM));  // (970, 100, 20, 130)
 
 
         obstacle1A = (Obst1) obstacles.get(0);  // Initialize obstacle1A from the list
@@ -157,15 +156,15 @@ public class Level1 extends state {
             }
 
             // Move bird back based on drag
-            currentBird.x = 150 - dx; // Update bird's x position
-            currentBird.y = 195 + dy; // Update bird's y position
+            currentBird.body.setTransform((150 - dx) / PPM, (195 + dy) / PPM, 0); // Update bird's position
             updateTrajectory(150, 195, -dx, -dy, speedMultiplier);
+
         }
 
         if (!Gdx.input.isTouched() && dragging) {
             dragging = false;
-            velocity.x = -(touchX - 150) * 0.5f * speedMultiplier/50;
-            velocity.y = (195 - touchY) * 0.5f * speedMultiplier/50;
+            velocity.x = -(touchX - 150) * 0.5f * speedMultiplier/PPM;
+            velocity.y = (195 - touchY) * 0.5f * speedMultiplier/PPM;
             isLaunched = true;
 
             // Launch the bird
@@ -177,24 +176,40 @@ public class Level1 extends state {
     }
     private void updateTrajectory(float originX, float originY, float dx, float dy, float speedMultiplier) {
         trajectoryDots.clear();
-        float velocityX = -dx * speedMultiplier;
-        float velocityY = dy * speedMultiplier;
-        float timeStep = 0.03f;
+
+        // Initial velocities in Box2D units
+        float velocityX = -dx * speedMultiplier / PPM;
+        float velocityY = dy * speedMultiplier / PPM;
+
+        // Convert origin to Box2D units
+        float startX = originX / PPM;
+        float startY = originY / PPM;
+
+        float gravity = GRAVITY / PPM; // Gravity in Box2D units
+        float timeStep = 0.1f;         // Time step for calculations
         float time = 0;
-        int maxDots = 20;
 
-        while (trajectoryDots.size() < maxDots) {
-            float x = originX + velocityX * time;
-            float y = originY + velocityY * time - 0.5f * GRAVITY * time * time;
+        for (int i = 0; i < 20; i++) {
+            // Calculate trajectory point
+            float x = startX + velocityX * time;
+            float y = startY + velocityY * time - 0.5f * gravity * time * time;
 
-            if (x < 0 || x > Gdx.graphics.getWidth() || y < 0 || y > Gdx.graphics.getHeight()) {
+            // Convert to screen coordinates
+            float screenX = x * PPM;
+            float screenY = y * PPM;
+
+            if (screenX < 0 || screenX > Gdx.graphics.getWidth() || screenY < 0 || screenY > Gdx.graphics.getHeight()) {
                 break;
             }
 
-            trajectoryDots.add(new Vector2(x, y));
-            time += timeStep;
+            trajectoryDots.add(new Vector2(screenX, screenY));
+            time += timeStep; // Increment time
         }
     }
+
+
+
+
 
     private void renderSlingshotBand(SpriteBatch sb) {
         float leftAnchorX = 175;
@@ -259,6 +274,7 @@ public class Level1 extends state {
             if (!pig.damaged && birdBounds.overlaps(pig.getBounds())) {
                 pig.damage(); // Mark pig as damaged
                 pigDamageTime = 1f;
+                pig.isDisposed = true;
                 // Start timer to remove pig after 1 second
             }
         }
@@ -266,6 +282,7 @@ public class Level1 extends state {
         // Check collision with obstacles
         for (Obstacles obstacle : obstacles) {
             if (birdBounds.overlaps(obstacle.getBounds())) {
+                obstacle.isDisposed = true;
                 System.out.println("Collision detected with obstacle: " + obstacle);
 
                 if (obstacle.body.getType() == BodyDef.BodyType.StaticBody) {
@@ -273,7 +290,6 @@ public class Level1 extends state {
                     obstacle.body.setType(BodyDef.BodyType.DynamicBody);
                     System.out.println("Obstacle type after change: " + obstacle.body.getType());
 
-                    // Apply an initial impulse to the obstacle to the right
                     float impulseX = 5f; // Adjusted impulse to the right
                     float impulseY = 5f; // Adjusted upward impulse
                     obstacle.body.applyLinearImpulse(new Vector2(impulseX, impulseY), obstacle.body.getWorldCenter(), true);
@@ -316,12 +332,9 @@ public class Level1 extends state {
     }
 
     private void switchToNextBird() {
-        // Stop the current bird's physics body
         currentBird.body.setLinearVelocity(0, 0);
-        currentBird.reset(); // Reset the bird's state
-
-        // Remove the current bird from the queue
         birdQueue.remove(0);
+
 
         // Check if there are more birds
         if (!birdQueue.isEmpty()) {
@@ -329,7 +342,7 @@ public class Level1 extends state {
             currentBird = birdQueue.get(0);
 
             // Reset bird position to slingshot
-            currentBird.body.setTransform(150 / PPM, 195 / PPM, 0);
+            currentBird.body.setTransform(190 / PPM, 210 / PPM, 0);
             currentBird.body.setLinearVelocity(0, 0); // Ensure the bird is stationary
 
             // Reset the dragging and launched state
@@ -339,8 +352,9 @@ public class Level1 extends state {
             // If more than one bird left, position the next bird beneath
             if (birdQueue.size() > 1) {
                 nextBird = birdQueue.get(1);
-                nextBird.body.setTransform(40 / PPM, 95 / PPM, 0);
-            } else {
+
+            }
+            else {
                 nextBird = null; // No more birds left
             }
         } else {
@@ -357,11 +371,42 @@ public class Level1 extends state {
         return pigs.isEmpty() || pigs.stream().allMatch(pig -> pig.isReadyToRemove());
     }
 
+    private void disposeBodies() {
+        // Dispose birds
+        for (int i = birdQueue.size() - 1; i >= 0; i--) {
+            Bird bird = birdQueue.get(i);
+            if (bird.isDisposed) {
+                world.destroyBody(bird.body); // Remove body from physics world
+                birdQueue.remove(i);         // Remove bird from queue
+            }
+        }
+
+        // Dispose pigs
+        for (int i = pigs.size() - 1; i >= 0; i--) {
+            Pigs pig = pigs.get(i);
+            if (pig.isDisposed) {
+                world.destroyBody(pig.body);
+                pigs.remove(i);
+            }
+        }
+
+        // Dispose obstacles
+        for (int i = obstacles.size() - 1; i >= 0; i--) {
+            Obstacles obstacle = obstacles.get(i);
+            if (obstacle.isDisposed) {
+                world.destroyBody(obstacle.body);
+                obstacles.remove(i);
+            }
+        }
+    }
+
+
 
     @Override
     public void update(float dt) {
         world.step(dt, 6, 2);
         if (GameWon || GameLost) return;
+        List<Body> BirdsToDestroy = new ArrayList<>();
 
         handleInput();
 
@@ -369,11 +414,12 @@ public class Level1 extends state {
             // Update the bird's position based on its physics body
             currentBird.update(dt);
 
-            // Check if the bird goes off-screen
-            if (currentBird.isOutOfBounds()) {
+            // Check if the bird stops (velocity approximately zero) or goes off-screen
+            if (currentBird.body.getLinearVelocity().len2() < 0.01f || currentBird.isOutOfBounds()) {
+                BirdsToDestroy=currentBird.reset();
                 switchToNextBird();
             }
-
+            world.step(1 / 60f, 6, 2); // Advance physics simulation
             checkCollisions(); // Check for collisions after updating bird position
         }
 
@@ -384,7 +430,10 @@ public class Level1 extends state {
                 obstacle.body.setLinearVelocity(0, 0); // Stop any further movement
             }
         }
-
+        for(Body body:BirdsToDestroy) {
+            world.destroyBody(body);
+        }
+        BirdsToDestroy.clear();
         for (Pigs pig : pigs) {
             pig.update(dt);
         }
@@ -401,7 +450,9 @@ public class Level1 extends state {
         }
 
         obstacles.removeIf(obstacle -> obstacle.isToRemove());
+        disposeBodies();
     }
+
 
 
     @Override
@@ -417,11 +468,8 @@ public class Level1 extends state {
 
         sb.begin();
         // Render the current bird at its updated position
-        currentBird.render(sb); // Render the current bird
-
-        // Render the next bird if it exists
-        if (nextBird != null) {
-            nextBird.render(sb);
+        for (Bird bird : birdQueue) {
+            bird.render(sb);
         }
 
         // Render pigs
@@ -444,5 +492,8 @@ public class Level1 extends state {
             }
         }
         sb.end();
+
+        debugRenderer.render(world, sb.getProjectionMatrix().cpy().scale(PPM, PPM, 1));
+
     }
 }

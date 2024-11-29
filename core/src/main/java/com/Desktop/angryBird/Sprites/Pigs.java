@@ -15,6 +15,8 @@ public abstract class Pigs {
     protected float height;
     public boolean damaged = false;
     private float damageTimer = 0;
+    public boolean isDisposed = false;
+
 
     // Box2D related fields
     public Body body;
@@ -39,6 +41,7 @@ public abstract class Pigs {
         bodyDef.type = BodyDef.BodyType.DynamicBody;
         bodyDef.position.set(x / PPM, y / PPM);
         bodyDef.fixedRotation = false; // Allow rotation
+
 
         // Create body in the world
         body = world.createBody(bodyDef);

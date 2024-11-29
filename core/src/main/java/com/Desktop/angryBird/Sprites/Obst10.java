@@ -18,17 +18,8 @@ public class Obst10 extends Obstacles {
         this.height = height;
         texture = new Texture("obj10.png");
 
-        // Create the body for the obstacle (scale to Box2D world)
-        createBody(x, y, width, height);
     }
 
-    // Adjust the creation of the Box2D body to correctly scale the obstacle
-    private void createBody(float x, float y, float width, float height) {
-        // Here you should define your Box2D body creation logic (e.g., using a box shape)
-        // Scale by PPM to convert from world coordinates to screen coordinates
-        Vector2 position = new Vector2(x, y);
-        // Create Box2D body (you may need to update this based on your original body creation code)
-    }
 
     @Override
     public void render(SpriteBatch sb) {

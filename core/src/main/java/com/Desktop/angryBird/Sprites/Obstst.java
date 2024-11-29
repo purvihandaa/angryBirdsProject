@@ -18,36 +18,6 @@ public class Obstst extends Obstacles {
         this.height = height;
         texture = new Texture("objst.png");
 
-        // Create the body for the obstacle (scale to Box2D world)
-        createBody(world, x, y, width, height);
-    }
-
-    private void createBody(World world, float x, float y, float width, float height) {
-        // Box2D body definition
-        BodyDef bodyDef = new BodyDef();
-        bodyDef.type = BodyDef.BodyType.StaticBody;  // Assuming the obstacles are static (non-moving)
-        bodyDef.position.set(x / PPM, y / PPM); // Convert to world coordinates
-
-        // Create the Box2D body
-        Body body = world.createBody(bodyDef);
-
-        // Box2D shape
-        PolygonShape shape = new PolygonShape();
-        shape.setAsBox(width / 2 / PPM, height / 2 / PPM);  // Convert to world units
-
-        // Create a fixture for the obstacle
-        FixtureDef fixtureDef = new FixtureDef();
-        fixtureDef.shape = shape;
-        fixtureDef.density = 0;  // Static obstacles should not have density
-        fixtureDef.friction = 0.5f;  // Adjust friction if needed
-        fixtureDef.restitution = 0.2f;  // Bounce effect when collided
-
-        // Attach the fixture to the body
-        body.createFixture(fixtureDef);
-        shape.dispose();  // Dispose of the shape after use
-
-        // Store the body to reference it later for rendering
-        this.body = body;
     }
 
 

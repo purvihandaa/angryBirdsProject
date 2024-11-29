@@ -6,7 +6,11 @@ import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.*;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import static com.Desktop.angryBird.States.BaseLevel.PPM;
+
 
 public abstract class Bird {
     protected Texture texture;
@@ -14,6 +18,9 @@ public abstract class Bird {
     public float width = 70 / PPM;
     public float height = 70 / PPM;
     public int power = 1000;
+    protected float angle;
+    public boolean isDisposed = false;
+    private List<Body> birdsToDestroy = new ArrayList<>();
 
     protected World world;
     public Body body;
@@ -119,9 +126,11 @@ public abstract class Bird {
     }
 
     // Additional method to reset bird state
-    public void reset() {
+    public List<Body> reset() {
         isLaunched = false;
         body.setLinearVelocity(0, 0);
-        body.setType(BodyDef.BodyType.StaticBody); // Reset to StaticBody
+        body.setType(BodyDef.BodyType.StaticBody);
+        birdsToDestroy.add(body);
+        return birdsToDestroy;
     }
 }
