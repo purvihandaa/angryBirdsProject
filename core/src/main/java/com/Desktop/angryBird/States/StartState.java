@@ -4,12 +4,14 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Rectangle;
+import com.badlogic.gdx.audio.Music;
 
 
 public class StartState extends state {
     private Texture background;
     private Texture playbt;
     private Rectangle playButtonBounds;
+    private Music backgroundMusic;
 
 
 
@@ -20,6 +22,11 @@ public class StartState extends state {
 
         // Define the bounds of the play button (position and size)
         playButtonBounds = new Rectangle(540, 325, 130, 70);
+
+        backgroundMusic = Gdx.audio.newMusic(Gdx.files.internal("background_music.mp3")); // Replace with your music file
+        backgroundMusic.setLooping(true); // Loop the music
+        backgroundMusic.setVolume(0.5f); // Set volume (0.0 to 1.0)
+        backgroundMusic.play();
     }
 
     @Override
@@ -47,6 +54,13 @@ public class StartState extends state {
         sb.draw(background, 0, 0,Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
         sb.draw(playbt, playButtonBounds.x, playButtonBounds.y, playButtonBounds.width, playButtonBounds.height);
         sb.end();
+
+    }
+
+    public void dispose() {
+//        background.dispose();
+//        playbt.dispose();
+        backgroundMusic.dispose(); // Dispose of the music when the state is destroyed
     }
 
 
