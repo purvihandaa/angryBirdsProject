@@ -17,19 +17,23 @@ public abstract class Pigs {
     private float damageTimer = 0;
     public boolean isDisposed = false;
 
+    // Hit counter and threshold
+    private int hitCounter = 0;
+    private final int hitThreshold;
 
     // Box2D related fields
     public Body body;
     private World world;
     private FixtureDef fixtureDef;
 
-    public Pigs(World world, float x, float y, String texturePath, float w, float h) {
+    public Pigs(World world, float x, float y, String texturePath, float w, float h, int hitThreshold) {
         this.world = world;
         this.x = x;
         this.y = y;
         this.width = w;
         this.height = h;
         this.texture = new Texture(texturePath);
+        this.hitThreshold = hitThreshold; // Set the hit threshold
 
         // Create Box2D body
         createPhysicsBody();
@@ -42,7 +46,6 @@ public abstract class Pigs {
         bodyDef.position.set(x / PPM, y / PPM);
         bodyDef.fixedRotation = false; // Allow rotation
 
-
         // Create body in the world
         body = world.createBody(bodyDef);
 
@@ -53,9 +56,9 @@ public abstract class Pigs {
         // Fixture definition
         fixtureDef = new FixtureDef();
         fixtureDef.shape = shape;
-        fixtureDef.density = 1f;
+        fixtureDef.density = 0.2f;
         fixtureDef.friction = 0.5f;
-        fixtureDef.restitution = 0.3f; // Bounciness
+        fixtureDef.restitution = 0.2f; // Bounciness
 
         // Create fixture
         body.createFixture(fixtureDef).setUserData(this);
@@ -74,14 +77,13 @@ public abstract class Pigs {
         }
     }
 
-
     public void render(SpriteBatch sb) {
         Vector2 position = body.getPosition();
         sb.draw(texture, position.x * PPM - width / 2, position.y * PPM - height / 2, width, height);
     }
 
     public Rectangle getBounds() {
-        return new Rectangle(x - width/2, y - height/2, width, height);
+        return new Rectangle(x - width / 2, y - height / 2, width, height);
     }
 
     public void setTexture(Texture newTexture) {
@@ -91,11 +93,18 @@ public abstract class Pigs {
         this.texture = newTexture;
     }
 
-    public boolean isReadyToRemove() {
-        return damaged && damageTimer >= 1.0f; // Ready to remove after 1 second
+    public void setReadyToRemove(boolean val) {
+        isDisposed=val;
+
     }
 
     public void damage() {
+        hitCounter++; // Increment hit counter
+        if (hitCounter >= hitThreshold) {
+            isDisposed = true; // Mark for removal
+            System.out.println("obstacle ready to be removed");
+        }
+
         if (!damaged) {
             this.texture = new Texture("pig_damaged.png"); // Set to damaged texture
             damaged = true;
@@ -104,6 +113,7 @@ public abstract class Pigs {
             body.applyLinearImpulse(new Vector2(1f, 1f), body.getWorldCenter(), true);
         }
     }
+
 
     public void dispose() {
         if (texture != null) {
@@ -116,8 +126,8 @@ public abstract class Pigs {
         }
     }
 
-    // Getter for the physics body if needed
-    public Body getBody() {
-        return body;
-    }
+
+    public int getHitCount() { return hitCounter; }
+    public int getHitThreshold() { return hitThreshold; }
+    public Body getBody() { return body; }
 }

@@ -28,7 +28,7 @@ public abstract class Bird {
     protected FixtureDef fixtureDef;
     protected PolygonShape shape;
 
-    private boolean isLaunched = false;
+    public boolean isLaunched = false;
 
     public Bird(World world, float x, float y, String texturePath) {
         this.world = world;
@@ -91,13 +91,6 @@ public abstract class Bird {
         );
     }
 
-    // Reduce power when colliding with an obstacle
-    public void reducePower(int damage) {
-        this.power -= damage;
-        if (this.power < 0) {
-            this.power = 0; // Prevent negative power
-        }
-    }
 
     public void dispose() {
         if (texture != null) {

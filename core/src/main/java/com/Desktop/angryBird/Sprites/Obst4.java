@@ -1,42 +1,20 @@
 package com.Desktop.angryBird.Sprites;
 
 import com.badlogic.gdx.graphics.Texture;
-import com.badlogic.gdx.graphics.g2d.SpriteBatch;
-import com.badlogic.gdx.physics.box2d.*;
-import com.badlogic.gdx.math.Vector2;
-
-import static com.Desktop.angryBird.States.BaseLevel.PPM;
+import com.badlogic.gdx.physics.box2d.World;
 
 public class Obst4 extends Obstacles {
-    private Texture texture;
-    private float width;
-    private float height;
+
+    private static final int HIT_THRESHOLD = 2; // Example threshold
+
+    private static final float DENSITY = 0.8f; // Example density
+    private static final float RESTITUTION = 0.2f; // Example restitution
+    private static final float FRICTION = 0.8f; // Example friction
 
     public Obst4(World world, float x, float y, float width, float height) {
-        super(world, x, y, width, height);
-        this.width = width;
-        this.height = height;
-        texture = new Texture("obj4.png");
-
+        // Pass the hit threshold and physical properties to the superclass
+        super(world, x, y, width, height, HIT_THRESHOLD, DENSITY, RESTITUTION, FRICTION);
+        setTexture(new Texture("obj4.png"));  // Set the texture for this obstacle
     }
 
-
-
-
-
-    @Override
-    public void render(SpriteBatch sb) {
-        // Scale the texture drawing according to PPM
-        sb.draw(
-            texture,
-            body.getPosition().x * PPM - (width * PPM) / 2,  // Scale position by PPM
-            body.getPosition().y * PPM - (height * PPM) / 2,  // Scale position by PPM
-            width * PPM,  // Scale the width by PPM
-            height * PPM   // Scale the height by PPM
-        );
-    }
-
-    public void dispose() {
-        texture.dispose();
-    }
 }
