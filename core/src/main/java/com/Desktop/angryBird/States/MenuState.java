@@ -14,8 +14,8 @@ public class MenuState extends state {
     private Texture level4;
     private Texture level5;
     private Texture loadgameButton;
-    private Rectangle lev1Bounds;
-    private Rectangle lev2Bounds;
+    public Rectangle lev1Bounds;
+    public Rectangle lev2Bounds;
     private Rectangle lev3Bounds;
     private Rectangle lev4Bounds;
     private Rectangle lev5Bounds;
@@ -94,6 +94,45 @@ public class MenuState extends state {
         sb.draw(level5, lev5Bounds.x, lev5Bounds.y, lev5Bounds.width, lev5Bounds.height);
         sb.end();
 
+    }
+
+    public Rectangle getLev1Bounds() {
+        return lev1Bounds;
+    }
+
+    public Rectangle getLev2Bounds() {
+        return lev2Bounds;
+    }
+
+    // Add a method to get the input (for testing)
+    public Object getInput() {
+        try {
+            java.lang.reflect.Field inputField = getClass().getSuperclass().getDeclaredField("input");
+            inputField.setAccessible(true);
+            return inputField.get(this);
+        } catch (Exception e) {
+            throw new RuntimeException("Could not get input", e);
+        }
+    }
+
+    public MenuState(GameStateManager gsm, boolean testing) {
+        super(gsm);
+        if (!testing) {
+            // Only load textures if not testing
+            menu = new Texture("menu.png");
+            level1 = new Texture("one.png");
+            level2 = new Texture("two.png");
+            level3 = new Texture("three.png");
+            level4 = new Texture("four.png");
+            level5 = new Texture("five.png");
+        }
+
+        // Create bounds regardless of testing mode
+        lev1Bounds = new Rectangle(490, 320, 38, 38);
+        lev2Bounds = new Rectangle(645, 325, 38, 38);
+        lev3Bounds = new Rectangle(790, 385, 36, 36);
+        lev4Bounds = new Rectangle(925, 470, 38, 38);
+        lev5Bounds = new Rectangle(1040, 305, 38, 38);
     }
 
 

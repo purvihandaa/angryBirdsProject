@@ -31,7 +31,7 @@ public class Level1 extends state {
     private RedBird redBird;
     private YellowBird birdYellow;
     private BlackBird birdBlack;
-    private Bird currentBird;
+    public Bird currentBird;
     private List<Bird> birdQueue;
     private Bird nextBird;
 
@@ -141,7 +141,13 @@ public class Level1 extends state {
         createSideWalls();
     }
 
+    public List<Bird> getBirdQueue() {
+        return birdQueue;
+    }
 
+    public Bird getCurrentBird(){
+        return currentBird;
+    }
 
     @Override
     protected void handleInput() {
@@ -360,7 +366,7 @@ public class Level1 extends state {
         // Add more logic here if required, like animations or score increment
     }
 
-    private void switchToNextBird() {
+    public void switchToNextBird() {
         currentBird.body.setLinearVelocity(0, 0);
         birdQueue.remove(0);
 
@@ -396,7 +402,7 @@ public class Level1 extends state {
     }
 
 
-    private boolean arePigsDestroyed() {
+    public boolean arePigsDestroyed() {
         return pigs.isEmpty();
     }
 
