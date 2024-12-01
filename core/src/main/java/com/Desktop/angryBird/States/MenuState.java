@@ -39,16 +39,6 @@ public class MenuState extends state {
         loadgameButtonBounds = new Rectangle(1000, 660, 140, 60);
     }
 
-    private void saveGameState(String filePath) {
-        GameState gameState = new GameState();
-        gameState.setCurrentLevel(1); // Set the current level
-        // Set other game state attributes as needed
-        gameState.saveGameState(filePath);
-    }
-
-    private GameState loadGameState(String filePath) {
-        return GameState.loadGameState(filePath);
-    }
 
     @Override
     protected void handleInput() {
@@ -57,41 +47,21 @@ public class MenuState extends state {
             float touchY = Gdx.graphics.getHeight() - Gdx.input.getY();
 
             if (loadgameButtonBounds.contains(touchX, touchY)) {
-                saveGameState("savegame.dat");
-                GameState loadedState = loadGameState("savegame.dat");
-                if (loadedState != null) {
-                    switch (loadedState.getCurrentLevel()) {
-                        case 1:
-                            gsm.set(new Level1(gsm, loadedState));
-                            break;
-                        case 2:
-                            gsm.set(new Level2(gsm, loadedState));
-                            break;
-                        case 3:
-                            gsm.set(new Level3(gsm, loadedState));
-                            break;
-                        default:
-                            gsm.set(new MenuState(gsm)); // Fallback to menu if level is unknown
-                            break;
-                    }
-                }
+//                saveGameState("savegame.dat");
                 return;
 
             }
 
             if (lev1Bounds.contains(touchX, touchY)) {
-                GameState gameState = new GameState();
-                gameState.setCurrentLevel(1);
-                gsm.set(new Level1(gsm, gameState));
-            } else if (lev2Bounds.contains(touchX, touchY)) {
-                GameState gameState = new GameState();
-                gameState.setCurrentLevel(2);
-                gsm.set(new Level2(gsm, gameState));
-            } else if (lev3Bounds.contains(touchX, touchY)) {
-                GameState gameState = new GameState();
-                gameState.setCurrentLevel(3);
-                gsm.set(new Level3(gsm, gameState));
+                gsm.set(new Level1(gsm));
             }
+            else if (lev2Bounds.contains(touchX, touchY)) {
+                gsm.set(new Level2(gsm));
+            }
+            else if (lev3Bounds.contains(touchX, touchY)) {
+                gsm.set(new Level3(gsm));
+            }
+
         }
 
     }

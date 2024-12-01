@@ -46,11 +46,8 @@ public class LoseState1 extends state {
                 gsm.set(new MenuState(gsm));
             }
 
-
-            if (replayBounds.contains(touchX, touchY)) {
-                GameState gameState = new GameState();
-                gameState.setCurrentLevel(1); // Set the current level to 3
-                gsm.set(new Level1(gsm, gameState));
+            if (replayBounds.contains(touchX,touchY)) {
+                gsm.set(new Level1(gsm));
             }
         }
 

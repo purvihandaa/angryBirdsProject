@@ -47,9 +47,7 @@ public class LoseState3 extends state {
             }
 
             if (replayBounds.contains(touchX,touchY)) {
-                GameState gameState = new GameState();
-                gameState.setCurrentLevel(3);
-                gsm.set(new Level3(gsm, gameState));
+                gsm.set(new Level3(gsm));
             }
         }
 

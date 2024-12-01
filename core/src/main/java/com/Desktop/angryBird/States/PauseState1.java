@@ -40,9 +40,7 @@ public class PauseState1 extends state {
             if (playBounds.contains(touchX, touchY)) {
                 gsm.pop(); // Resume game by removing the PauseState
             } else if (restartBounds.contains(touchX, touchY)) {
-                GameState gameState = new GameState();
-                gameState.setCurrentLevel(1); // Set the current level to 3
-                gsm.set(new Level1(gsm, gameState));
+                gsm.set(new Level1(gsm)); // Restart the level
             } else if (backmenuBounds.contains(touchX, touchY)) {
                 gsm.set(new MenuState(gsm)); // Go back to the main menu
             }
