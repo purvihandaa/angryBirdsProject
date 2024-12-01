@@ -60,14 +60,14 @@ public class Level1 extends state {
     private Vector2 velocity = new Vector2(0, 0);
     private boolean isLaunched = false;
 
-    private List<Pigs> pigs; // List of pigs for easier collision checks
+    List<Pigs> pigs; // List of pigs for easier collision checks
     private float pigDamageTime = 0f; // Timer for pig damage removal
     private float birdChangeTime = 1f; // Timer for switching to next bird after one second
     private float initialBirdX, initialBirdY;
     private float maxDragDistance = 100f;
 
 
-    private List<Obstacles> obstacles;
+    List<Obstacles> obstacles;
 
 
     public Level1(GameStateManager gsm) {
@@ -165,7 +165,8 @@ public class Level1 extends state {
                 return;
             }
             if (touchX > 1000 && touchX < 1140 && touchY > 660 && touchY < 720) {
-//
+                SaveGameManager.saveGameState(this);
+                gsm.set(new MenuState(gsm));
                 return;
             }
             if (!isLaunched && currentBird.getBounds().contains(touchX, touchY)) {

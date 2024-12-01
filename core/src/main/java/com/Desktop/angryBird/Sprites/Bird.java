@@ -92,6 +92,122 @@ public abstract class Bird {
     }
 
 
+    public Texture getTexture() {
+        return texture;
+    }
+
+    public void setTexture(Texture texture) {
+        this.texture = texture;
+    }
+
+    public float getX() {
+        return x;
+    }
+
+    public void setX(float x) {
+        this.x = x;
+    }
+
+    public float getY() {
+        return y;
+    }
+
+    public void setY(float y) {
+        this.y = y;
+    }
+
+    public float getWidth() {
+        return width;
+    }
+
+    public void setWidth(float width) {
+        this.width = width;
+    }
+
+    public float getHeight() {
+        return height;
+    }
+
+    public void setHeight(float height) {
+        this.height = height;
+    }
+
+    public int getPower() {
+        return power;
+    }
+
+    public void setPower(int power) {
+        this.power = power;
+    }
+
+    public float getAngle() {
+        return angle;
+    }
+
+    public void setAngle(float angle) {
+        this.angle = angle;
+    }
+
+    public boolean isDisposed() {
+        return isDisposed;
+    }
+
+    public void setDisposed(boolean disposed) {
+        isDisposed = disposed;
+    }
+
+    public List<Body> getBirdsToDestroy() {
+        return birdsToDestroy;
+    }
+
+    public void setBirdsToDestroy(List<Body> birdsToDestroy) {
+        this.birdsToDestroy = birdsToDestroy;
+    }
+
+    public World getWorld() {
+        return world;
+    }
+
+    public void setWorld(World world) {
+        this.world = world;
+    }
+
+    public Body getBody() {
+        return body;
+    }
+
+    public void setBody(Body body) {
+        this.body = body;
+    }
+
+    public BodyDef getBodyDef() {
+        return bodyDef;
+    }
+
+    public void setBodyDef(BodyDef bodyDef) {
+        this.bodyDef = bodyDef;
+    }
+
+    public FixtureDef getFixtureDef() {
+        return fixtureDef;
+    }
+
+    public void setFixtureDef(FixtureDef fixtureDef) {
+        this.fixtureDef = fixtureDef;
+    }
+
+    public PolygonShape getShape() {
+        return shape;
+    }
+
+    public void setShape(PolygonShape shape) {
+        this.shape = shape;
+    }
+
+    public void setLaunched(boolean launched) {
+        isLaunched = launched;
+    }
+
     public void dispose() {
         if (texture != null) {
             texture.dispose();

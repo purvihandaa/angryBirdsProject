@@ -17,6 +17,71 @@ public abstract class Obstacles {
 
     // Hit counter and threshold
     private int hitCounter = 0;
+
+    public void setBody(Body body) {
+        this.body = body;
+    }
+
+    public boolean isDisposed() {
+        return isDisposed;
+    }
+
+    public void setDisposed(boolean disposed) {
+        isDisposed = disposed;
+    }
+
+    public boolean isToRemove() {
+        return toRemove;
+    }
+
+    public Texture getTexture() {
+        return texture;
+    }
+
+    public World getWorld() {
+        return world;
+    }
+
+    public void setWorld(World world) {
+        this.world = world;
+    }
+
+    public float getWidth() {
+        return width;
+    }
+
+    public void setWidth(float width) {
+        this.width = width;
+    }
+
+    public float getHeight() {
+        return height;
+    }
+
+    public void setHeight(float height) {
+        this.height = height;
+    }
+
+    public int getHitCounter() {
+        return hitCounter;
+    }
+
+    public void setHitCounter(int hitCounter) {
+        this.hitCounter = hitCounter;
+    }
+
+    public float getDensity() {
+        return density;
+    }
+
+    public float getRestitution() {
+        return restitution;
+    }
+
+    public float getFriction() {
+        return friction;
+    }
+
     private final int hitThreshold;
 
     // New properties for physical characteristics
@@ -121,6 +186,28 @@ public abstract class Obstacles {
         world.destroyBody(body);
         if (texture != null) {
             texture.dispose();
+        }
+    }
+
+    public void setDensity(float density) {
+        // This method can't directly modify the final density field
+        // You might need to recreate the body with the new density
+        FixtureDef fixtureDef = new FixtureDef();
+        fixtureDef.density = density;
+        body.createFixture(fixtureDef);
+    }
+
+    public void setFriction(float friction) {
+        // Update the fixture's friction
+        for (Fixture fixture : body.getFixtureList()) {
+            fixture.setFriction(friction);
+        }
+    }
+
+    public void setRestitution(float restitution) {
+        // Update the fixture's restitution
+        for (Fixture fixture : body.getFixtureList()) {
+            fixture.setRestitution(restitution);
         }
     }
 

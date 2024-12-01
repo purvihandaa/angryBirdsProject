@@ -4,6 +4,8 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Rectangle;
+import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.physics.box2d.World;
 
 public class MenuState extends state {
 
@@ -47,7 +49,10 @@ public class MenuState extends state {
             float touchY = Gdx.graphics.getHeight() - Gdx.input.getY();
 
             if (loadgameButtonBounds.contains(touchX, touchY)) {
-//                saveGameState("savegame.dat");
+                World world = new World(new Vector2(0, -9.8f), true);
+                Level1 loadedLevel1 = new Level1(gsm);
+                SaveGameManager.loadGameState(loadedLevel1, world);
+                gsm.set(loadedLevel1);
                 return;
 
             }

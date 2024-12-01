@@ -17,6 +17,94 @@ public abstract class Pigs {
     private float damageTimer = 0;
     public boolean isDisposed = false;
 
+    public Texture getTexture() {
+        return texture;
+    }
+
+    public float getX() {
+        return x;
+    }
+
+    public void setX(float x) {
+        this.x = x;
+    }
+
+    public float getY() {
+        return y;
+    }
+
+    public void setY(float y) {
+        this.y = y;
+    }
+
+    public float getWidth() {
+        return width;
+    }
+
+    public void setWidth(float width) {
+        this.width = width;
+    }
+
+    public float getHeight() {
+        return height;
+    }
+
+    public void setHeight(float height) {
+        this.height = height;
+    }
+
+    public boolean isDamaged() {
+        return damaged;
+    }
+
+    public void setDamaged(boolean damaged) {
+        this.damaged = damaged;
+    }
+
+    public float getDamageTimer() {
+        return damageTimer;
+    }
+
+    public void setDamageTimer(float damageTimer) {
+        this.damageTimer = damageTimer;
+    }
+
+    public boolean isDisposed() {
+        return isDisposed;
+    }
+
+    public void setDisposed(boolean disposed) {
+        isDisposed = disposed;
+    }
+
+    public int getHitCounter() {
+        return hitCounter;
+    }
+
+    public void setHitCounter(int hitCounter) {
+        this.hitCounter = hitCounter;
+    }
+
+    public void setBody(Body body) {
+        this.body = body;
+    }
+
+    public World getWorld() {
+        return world;
+    }
+
+    public void setWorld(World world) {
+        this.world = world;
+    }
+
+    public FixtureDef getFixtureDef() {
+        return fixtureDef;
+    }
+
+    public void setFixtureDef(FixtureDef fixtureDef) {
+        this.fixtureDef = fixtureDef;
+    }
+
     // Hit counter and threshold
     private int hitCounter = 0;
     private final int hitThreshold;
@@ -130,4 +218,8 @@ public abstract class Pigs {
     public int getHitCount() { return hitCounter; }
     public int getHitThreshold() { return hitThreshold; }
     public Body getBody() { return body; }
+
+    public void setHitThreshold(int hitThreshold) {
+
+    }
 }
