@@ -55,7 +55,9 @@ public class WinState1 extends state {
             }
 
             if (replayBounds.contains(touchX,touchY)) {
-                gsm.set(new Level1(gsm));
+                GameState gameState = new GameState();
+                gameState.setCurrentLevel(1);
+                gsm.set(new Level1(gsm, gameState));
             }
         }
     }

@@ -72,8 +72,9 @@ public class Level3 extends state {
     private List<Obstacles> obstacles;
 
 
-    public Level3(GameStateManager gsm) {
+    public Level3(GameStateManager gsm,GameState gameState) {
         super(gsm);
+//        this.gameState = gameState != null ? gameState : new GameState();
         world = new World(new Vector2(0, -9.81f), true);
         contactListener = new GameContactListener(world);
         world.setContactListener(contactListener);
@@ -160,13 +161,14 @@ public class Level3 extends state {
             }
             if (touchX > 1000 && touchX < 1140 && touchY > 660 && touchY < 720) {
                 saveGameState("savegame.dat");
+                gsm.set(new MenuState(gsm));
+
                 return;
             }
             if (!isLaunched && currentBird.getBounds().contains(touchX, touchY)) {
                 dragging = true;
                 initialBirdX = currentBird.x;
                 initialBirdY = currentBird.y;
-
 
             }
         }

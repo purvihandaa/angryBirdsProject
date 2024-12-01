@@ -74,7 +74,7 @@ public class Level2 extends state {
     private List<Obstacles> obstacles;
 
 
-    public Level2(GameStateManager gsm) {
+    public Level2(GameStateManager gsm,GameState gameState) {
         super(gsm);
         world = new World(new Vector2(0, -9.81f), true);
         contactListener = new GameContactListener(world);
@@ -170,6 +170,7 @@ public class Level2 extends state {
             }
             if (touchX > 1000 && touchX < 1140 && touchY > 660 && touchY < 720) {
                 saveGameState("savegame.dat");
+                gsm.set(new MenuState(gsm));
                 return;
             }
             if (!isLaunched && currentBird.getBounds().contains(touchX, touchY)) {
